@@ -39,7 +39,11 @@
                     <relocations>
                         <relocation>
                             <pattern>io.papermc</pattern>
-                            <shadedPattern>me.justeli.coins.shaded.io.papermc</shadedPattern>
+                            <shadedPattern>me.justeli.coins.io.papermc</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.bstats</pattern>
+                            <shadedPattern>me.justeli.coins.org.bstats</shadedPattern>
                         </relocation>
                     </relocations>
                     <filters>
@@ -115,19 +119,17 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- libraries in plugin.yml -->
+        <!-- compile -->
         <dependency>
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
-            <version>3.0.2</version> <!-- keep synced with plugin.yml! -->
-            <scope>provided</scope>
+            <version>3.0.2</version>
+            <scope>compile</scope>
         </dependency>
-
-        <!-- compile -->
         <dependency>
             <groupId>io.papermc</groupId>
             <artifactId>paperlib</artifactId>
-            <version>1.0.7</version>
+            <version>1.0.8</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

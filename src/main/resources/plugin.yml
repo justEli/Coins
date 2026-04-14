@@ -6,8 +6,6 @@ description: '${project.description}'
 api-version: '1.17'
 authors: [JustEli]
 softdepend: [Vault, WorldGuard, mcMMO, MythicMobs]
-libraries:
-  - org.bstats:bstats-bukkit:3.0.2
 commands:
   coins:
     description: 'Command for showing all available commands from Coins. Also used for various admin tools.'
