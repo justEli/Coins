@@ -1,9 +1,9 @@
 package me.justeli.coins.hook.bstats;
 
-import io.papermc.lib.PaperLib;
 import me.justeli.coins.Coins;
 import me.justeli.coins.config.Config;
 import me.justeli.coins.config.Settings;
+import me.justeli.coins.util.VersionLib;
 import org.bstats.charts.SimplePie;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -85,7 +85,7 @@ public final class Metrics
             metrics.add("location-limit-hours", Config.LOCATION_LIMIT_HOURS);
 
             metrics.add("usingSkullTexture", Config.SKULL_TEXTURE != null && !Config.SKULL_TEXTURE.isEmpty());
-            metrics.add("usingPaper", PaperLib.isPaper());
+            metrics.add("usingPaper", VersionLib.isPaper());
             metrics.add("usingMythicMobs", this.coins.mmHook().isPresent());
 
             metrics.add("droppedCoinName", Config.DROPPED_COIN_NAME);

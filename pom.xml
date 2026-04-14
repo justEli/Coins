@@ -38,10 +38,6 @@
                     <dependencyReducedPomLocation>${project.build.directory}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
                     <relocations>
                         <relocation>
-                            <pattern>io.papermc</pattern>
-                            <shadedPattern>me.justeli.coins.io.papermc</shadedPattern>
-                        </relocation>
-                        <relocation>
                             <pattern>org.bstats</pattern>
                             <shadedPattern>me.justeli.coins.org.bstats</shadedPattern>
                         </relocation>
@@ -124,12 +120,6 @@
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
             <version>3.0.2</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.papermc</groupId>
-            <artifactId>paperlib</artifactId>
-            <version>1.0.8</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

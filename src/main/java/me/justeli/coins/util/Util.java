@@ -1,6 +1,5 @@
 package me.justeli.coins.util;
 
-import io.papermc.lib.PaperLib;
 import me.justeli.coins.config.Config;
 import me.justeli.coins.config.MessagePosition;
 import net.md_5.bungee.api.ChatColor;
@@ -64,17 +63,14 @@ public final class Util
 
     private static String parseRGB (@NotNull String msg)
     {
-        if (PaperLib.getMinecraftVersion() >= 16)
+        Matcher matcher = HEX_PATTERN.matcher(msg);
+        while (matcher.find())
         {
-            Matcher matcher = HEX_PATTERN.matcher(msg);
-            while (matcher.find())
-            {
-                String color = msg.substring(matcher.start(), matcher.end());
-                String hex = color.replace("&", "").toUpperCase();
+            String color = msg.substring(matcher.start(), matcher.end());
+            String hex = color.replace("&", "").toUpperCase();
 
-                msg = msg.replace(color, ChatColor.of(hex).toString());
-                matcher = HEX_PATTERN.matcher(msg);
-            }
+            msg = msg.replace(color, ChatColor.of(hex).toString());
+            matcher = HEX_PATTERN.matcher(msg);
         }
 
         return msg;

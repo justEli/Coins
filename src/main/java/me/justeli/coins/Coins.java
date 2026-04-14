@@ -1,6 +1,5 @@
 package me.justeli.coins;
 
-import io.papermc.lib.PaperLib;
 import me.justeli.coins.command.CoinsCommand;
 import me.justeli.coins.command.DisabledCommand;
 import me.justeli.coins.command.WithdrawCommand;
@@ -25,6 +24,8 @@ import me.justeli.coins.item.CreateCoin;
 import me.justeli.coins.item.MetaBuilder;
 import me.justeli.coins.util.VersionChecker;
 import me.justeli.coins.util.Util;
+import me.justeli.coins.util.VersionLib;
+import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -50,10 +51,8 @@ public final class Coins
 
     private static final ExecutorService ASYNC_THREAD = Executors.newSingleThreadExecutor();
 
-    private static final String UNSUPPORTED_VERSION = """
-        Coins only supports Minecraft version 1.17 and higher.
-        Using Minecraft version 1.8.8 to 1.13.2? Use Coins version 1.10.8.
-        Using 1.14 to 1.16? Use Coins version 1.13.1. All without support!""";
+    private static final String UNSUPPORTED_VERSION =
+        "Coins only supports Minecraft version 1.19 and newer.";
 
     private static final String USING_BUKKIT = """
         You seem to be using Bukkit, but the plugin Coins \
@@ -69,14 +68,14 @@ public final class Coins
         long current = System.currentTimeMillis();
         Locale.setDefault(Locale.US);
 
-        if (PaperLib.getMinecraftVersion() < 17)
+        if (VersionLib.getMinecraftVersion() < 19)
         {
             line(Level.SEVERE);
             console(Level.SEVERE, UNSUPPORTED_VERSION);
             disablePlugin(UNSUPPORTED_VERSION);
         }
 
-        if (!PaperLib.isSpigot() && !PaperLib.isPaper())
+        if (!VersionLib.isSpigot() && !VersionLib.isPaper())
         {
             line(Level.SEVERE);
             console(Level.SEVERE, USING_BUKKIT);
@@ -89,9 +88,8 @@ public final class Coins
             noEconomySupport(missingPlugin);
         }
 
-        if (!PaperLib.isPaper())
+        if (!VersionLib.isPaper())
         {
-            PaperLib.suggestPaper(this);
             console(Level.WARNING, "Players with a full inventory will be able to pick up coins when Paper is installed.");
         }
 
@@ -214,7 +212,7 @@ public final class Coins
     {
         PluginManager manager = getServer().getPluginManager();
 
-        manager.registerEvents(PaperLib.isPaper()? new PaperEventListener(this) : new BukkitEventListener(this), this);
+        manager.registerEvents(VersionLib.isPaper()? new PaperEventListener(this) : new BukkitEventListener(this), this);
 
         this.unfairMobHandler = new UnfairMobHandler(this);
         this.pickupHandler = new PickupHandler(this);
