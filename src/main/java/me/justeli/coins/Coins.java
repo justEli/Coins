@@ -25,7 +25,6 @@ import me.justeli.coins.item.MetaBuilder;
 import me.justeli.coins.util.VersionChecker;
 import me.justeli.coins.util.Util;
 import me.justeli.coins.util.VersionLib;
-import org.bukkit.Bukkit;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;

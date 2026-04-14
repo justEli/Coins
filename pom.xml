@@ -6,7 +6,7 @@
 
     <groupId>me.justeli.coins</groupId>
     <artifactId>Coins</artifactId>
-    <version>b1.14</version>
+    <version>1.14</version>
     <name>Coins</name>
     <description>Coins is a plugin that allows players to collect coins for killing mobs and mining precious blocks. It also comes with the ability to withdraw balance into physical coins.</description>
     <url>https://www.spigotmc.org/resources/coins.33382/</url>
