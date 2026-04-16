@@ -80,6 +80,7 @@ public final class Metrics {
             metrics.add("location-limit-hours", Config.LOCATION_LIMIT_HOURS);
             metrics.add("usingSkullTexture", Config.SKULL_TEXTURE != null && !Config.SKULL_TEXTURE.isEmpty());
             metrics.add("usingPaper", VersionUtil.isPlatformAtLeast(VersionUtil.Platform.PAPER));
+            metrics.add("platform", VersionUtil.getPlatform().getName()); // todo add to bstats page
             metrics.add("usingMythicMobs", coins.mmHook().isPresent());
             metrics.add("droppedCoinName", Config.DROPPED_COIN_NAME);
             metrics.add("withdrawnCoinNamesSingular", Config.WITHDRAWN_COIN_NAME_SINGULAR);

@@ -19,6 +19,7 @@ public final class InventoryHandler implements Listener {
         coins.parseEventHandlers(this);
     }
 
+    // todo maybe this should be removed, or a config option
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     void onInventoryClickEvent(InventoryClickEvent event) {
         if (event.isCancelled()) {

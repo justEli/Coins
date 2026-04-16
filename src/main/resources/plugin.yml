@@ -19,31 +19,59 @@ commands:
     permission: 'coins.withdraw'
     usage: '/<command> <worth> [amount]'
 permissions:
-  coins.command:
+  'coins.command':
     default: true
-  coins.command.reload:
+  'coins.command.reload':
+    description: 'Access to /coins reload.'
     default: op
-  coins.command.settings:
+  'coins.command.settings':
+    description: 'Access to /coins settings.'
     default: op
-  coins.command.drop:
+  'coins.command.language':
+    description: 'Access to /coins language.'
     default: op
-  coins.command.remove:
+  'coins.command.version':
+    description: 'Access to /coins version.'
     default: op
-  coins.command.language:
+  'coins.command.toggle':
+    description: 'Access to /coins toggle.'
     default: op
-  coins.command.version:
+  'coins.command.drop':
+    description: 'Access to /coins drop.'
     default: op
-  coins.command.toggle:
+  'coins.command.remove':
+    description: 'Access to /coins remove.'
     default: op
-  coins.withdraw:
-    description: 'Access to the /withdraw command, and ability to withdraw and deposit coins.'
+  'coins.withdraw':
+    description: 'Access to /withdraw, and ability to withdraw and deposit coins.'
     default: op
-  coins.multiplier.n:
-    description: 'Permission to give to players who should get multiplied coin drops. Replace /n/ with a number.'
+  'coins.bypass.lose_on_death':
+    description: 'Bypass the mechanic that lets your lose coins on death.'
     default: false
-  coins.disable:
+  'coins.bypass.percentage_hit':
+    description: 'Bypass the minimum percentage to hit a mob before it drops coins.'
+    default: false
+  'coins.bypass.location_limit':
+    description: 'Bypass the limit for killing mobs in a single location.'
+    default: false
+  'coins.drop.spawner_mobs':
+    description: 'Always get coins for killing mobs from spawners.'
+    default: false
+  'coins.drop.split_mobs':
+    description: 'Always get coins for killing split mobs, like slimes.'
+    default: false
+  'coins.drop.hostile_mobs':
+    description: 'Always get coins for killing hostile mobs.'
+    default: false
+  'coins.drop.passive_mobs':
+    description: 'Always get coins for killing passive mobs.'
+    default: false
+  'coins.drop.players':
+    description: 'Always get coins for killing other players.'
+    default: false
+  'coins.disable':
     description: 'Permission to give to players to disable coin pickup for them.'
     default: false
-  coins.spawner:
-    description: 'Permission to give to players who should get coins from killing mobs from spawners.'
+  'coins.multiplier.n':
+    description: 'Permission to give to players to get multiplied coin drops. Replace /n/ with a number.'
     default: false

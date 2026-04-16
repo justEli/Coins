@@ -3,7 +3,7 @@ package me.justeli.coins.config;
 import com.google.common.base.CaseFormat;
 import com.google.common.base.Converter;
 import me.justeli.coins.Coins;
-import me.justeli.coins.util.PermissionNode;
+import me.justeli.coins.util.Permissions;
 import me.justeli.coins.util.Util;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -11,7 +11,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -27,7 +26,6 @@ import java.nio.file.Files;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -454,15 +452,7 @@ public final class Settings {
 
     public double getMultiplier(Player player) {
         if (!playerMultiplier.containsKey(player.getUniqueId())) {
-            List<Double> permissions = new ArrayList<>();
-            for (PermissionAttachmentInfo permissionInfo : player.getEffectivePermissions()) {
-                String permission = permissionInfo.getPermission();
-                if (permission.startsWith(PermissionNode.MULTIPLIER_PREFIX)) {
-                    String number = permission.substring(PermissionNode.MULTIPLIER_PREFIX.length());
-                    permissions.add(Util.parseDouble(number).orElse(1D));
-                }
-            }
-            playerMultiplier.put(player.getUniqueId(), permissions.isEmpty()? 1D : Collections.max(permissions));
+            playerMultiplier.put(player.getUniqueId(), Permissions.getMultiplier(player));
         }
         return playerMultiplier.computeIfAbsent(player.getUniqueId(), empty -> 1D);
     }

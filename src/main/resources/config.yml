@@ -3,11 +3,11 @@
 # # # # # # # # # # # # # # # # # # # # # # # #
 # This config was generated for Coins version ${project.version}.
 
-# This project is entirely being developed in the spare time of the developer.
-#  If you like the plugin, consider donating at https://plugin.coins.community/.
+# This project is entirely being developed in the spare time of the developer. If you like
+#  the plugin, consider donating at https://plugin.coins.community/.
 
-# Join the Discord support server at https://plugin.coins.community/discord.
-#  Make sure to read the FAQ (#coins-faq) first, before asking for support!
+# Join the Discord support server at https://plugin.coins.community/discord. Make sure to
+#  read the FAQ (#coins-faq) first, before asking for support in #coins-general.
 
 #  #  #  #  #  #  #  #
 #  Misc & Language   #
@@ -16,28 +16,28 @@
 # Show a message to update the plugin on start-up, if the plugin is outdated.
 check-for-updates: true
 
-# What language should the plugin use? And what is your server's currency symbol?
-#  All available languages can be found in the folder 'languages' inside the plugin
-#  folder. Included languages by default: English, Dutch, German, French, Spanish,
-#  Swedish, Italian, Chinese, Hungarian, Russian and Turkish.
+# What language should the plugin use? And what is your server's currency symbol? All
+#  available languages can be found in the folder 'languages' inside the plugin folder.
+#  Included languages by default: English, Dutch, German, French, Spanish, Swedish,
+#  Italian, Chinese, Hungarian, Russian and Turkish.
 language: 'English'
 currency-symbol: '$'
 
-# This message is sent as action bar (bottom of a player's screen) by default,
-#  telling the player how much money they have picked up. The variable '{currency}'
-#  will be replaced by the configured value at 'currency-symbol'.
+# This message is sent as action bar (bottom of a player's screen) by default, telling the
+#  player how much money they have picked up. The variable '{currency}' will be replaced
+#  by the configured value at 'currency-symbol'.
 pickup-message: '&2+ &a{currency}{amount}'
 pickup-message-position: 'actionbar' # other options: 'subtitle', 'title', 'chat'
 
-# How many decimals should currency from this plugin have? Set to 0 for rounded
-#  money. Setting this to 1 will do, for example: $2.3 $5.8 $8.0. Setting to 2 will
-#  format like: $5.23, $3.70, $6.99. This setting will be ignored (and set to 0) if
-#  'drop-each-coin' is set to true.
+# How many decimals should currency from this plugin have? Set to 0 for rounded money.
+#  Setting this to 1 will do, for example: $2.3 $5.8 $8.0. Setting to 2 will format like:
+#  $5.23, $3.70, $6.99. This setting will be ignored (and set to 0) if 'drop-each-coin' is
+#  set to true.
 money-decimals: 2
 
-# The symbols to use for separating digits (in thousands). The default values
-#  (dot, and comma) format numbers, for example, like 1,000.6 or 2,100.90 (depending
-#  on your setting `money-decimals`. The group separator can be empty if preferred.
+# The symbols to use for separating digits (in thousands). The default values (dot, and
+#  comma) format numbers, for example, like 1,000.6 or 2,100.90 (depending on your setting
+#  'money-decimals'). The group separator can be empty if preferred.
 digit-decimal-separator: '.'
 digit-group-separator: ','
 
@@ -45,9 +45,9 @@ digit-group-separator: ','
 #  Coin Properties   #
 #  #  #  #  #  #  #  #
 
-# Here you can configure the names of dropped coins and withdrawn coins. HEX color
-#  codes are possible as well, with following format: '&#xxxxxx', where x = [0-9a-f].
-# Color codes: http://minecraft.gamepedia.com/Formatting_codes
+# Here you can configure the names of dropped coins and withdrawn coins. HEX color codes
+#  are possible as well, with following format: '&#xxxxxx', where x = [0-9a-f]. Color
+#  codes: http://minecraft.gamepedia.com/Formatting_codes
 dropped-coin-name: '&6Coin'
 withdrawn-coin-names:
   singular: '&e{amount} &6Coin'
@@ -57,150 +57,156 @@ withdrawn-coin-names:
 # Material list: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
 coin-item: 'sunflower'
 
-# You can also set a custom texture for the coin, as a skull. Filling this will
-#  ignore 'coin-item'. Input the text from the example page at "Other > Value" at
-#  the bottom of the page, it's a 'texture value'. For the example, that would be
-#  the one starting with "eyJ0ZXh0dXJl[...]". In case you need the UUID of the
-#  skull, it is always: 00000001-0001-0001-0001-000000000002.
+# You can also set a custom texture for the coin, as a skull. Filling this will ignore
+#  'coin-item'. Input the text from the example page at "Other > Value" at the bottom of
+#  the page, it's a 'texture value'. For the example, that would be the one starting with
+#  "eyJ0ZXh0dXJl[...]". In case you need the UUID of the skull, it is always:
+#  00000001-0001-0001-0001-000000000002.
 # Example skull: https://minecraft-heads.com/custom-heads/decoration/3005-money-bag
 skull-texture: ''
 
-# Should the coin have an enchanted effect?
+# Whether to give the coin an enchanted effect. Does not work for skulls.
 enchanted-coin: false
 
-# This value sets the custom model data value for the coin. This can be used for
-#  custom textures. Default: 0 (disables the feature) You are probably only
-#  interested if you use a custom texture pack.
+# This value sets the custom model data value for the coin. This can be used for custom
+#  textures. Default: 0 (disables the feature) You are probably only interested if you use
+#  a custom texture pack.
 custom-model-data: 0
 
 #  #  #  #  #  #  #
 #  Coin Behavior  #
 #  #  #  #  #  #  #
 
-# The amount of money one coin is worth. Creates a random number between 'from' and
-#  'to' which - as money - will be given to the player on pickup.
+# The amount of money one coin is worth. Creates a random number between 'from' and 'to'
+#  which - as money - will be given to the player on pickup.
 money-amount:
   from: 3.00
   to: 7.00
 
-# Prevent hoppers from picking up dropped coins specifically. Withdrawn coins will
-#  still be picked up.
+# Prevent hoppers from picking up dropped coins specifically. Withdrawn coins will still
+#  be picked up.
 disable-hoppers: false
 
-# This plugin drops one coin by default, being worth what's set at 'money-amount'.
-#  But here you can set that Coins should drop money-amount's AMOUNT of coins, with
-#  each coin being worth $1. So if 'drop-each-coin' is set to true, killed mobs will
-#  drop 'from' to 'to' *amount* of coins, with each coin being worth $1. So by
-#  default it will drop 3 to 7 coins when 'drop-each-coin' is true.
+# This plugin drops one coin by default, being worth what's set at 'money-amount'. But
+#  here you can set that Coins should drop money-amount's AMOUNT of coins, with each coin
+#  being worth $1. So if 'drop-each-coin' is set to true, killed mobs will drop 'from' to
+#  'to' *amount* of coins, with each coin being worth $1. So by default it will drop 3 to
+#  7 coins when 'drop-each-coin' is true.
 drop-each-coin: false
 
-# Should coins be stacked? Or should a coin be one on its own? Stacked coins don't
-#  act like one coin. The stack is counted and the worth is multiplied. Not stacking
-#  coins is just for a cooler effect. This setting will be ignored (and set to
-#  false) if 'drop-each-coin' is set to true.
+# Should coins be stacked? Or should a coin be one on its own? Stacked coins don't act
+#  like one coin. The stack is counted and the worth is multiplied. Not stacking coins is
+#  just for a cooler effect. This setting will be ignored (and set to false) if
+#  'drop-each-coin' is set to true.
 stack-coins: false
 
-# Should a sound be played when a coin is picked up? If so, what should that sound
-#  be? And at what pitch and volume should it be played at?
+# Should a sound be played when a coin is picked up? If so, what should that sound be? And
+#  at what pitch and volume should it be played at?
 # Sounds: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
 pickup-sound: true
 sound-name: 'ITEM_ARMOR_EQUIP_GOLD'
 sound-pitch: 0.30
 sound-volume: 0.50
 
-# List all worlds that you want Coins to be disabled in. World names are
-#  case-sensitive! Example for disabling two worlds called 'creative' and 'plots':
-#  disabledWorlds: [plots, creative]
+# List all worlds that you want Coins to be disabled in. World names are case-sensitive!
+#  Example for disabling two worlds called 'creative' and 'plots':
+#  disabled-worlds: [plots, creative]
 disabled-worlds: []
 
-# Allow players to change the name of coins. Changing the names of coins does not
-#  make it lose its value.
+# Allow players to change the name of coins. Changing the names of coins does not make it
+#  lose its value.
 allow-name-change: false
 
-# Allow players to use coins in a bench (i.e. crafting, smelting). Coin will lose
-#  its value.
+# Allow players to use coins in a bench (i.e. crafting, smelting). Coin will lose its
+#  value.
 allow-modification: false
 
-# Add more value to coin drops when a Looting or Fortune enchant is used. The
-#  configured value is a percentage per enchantment level. Default value is 0.05 =
-#  5%. Which means: Fortune/Looting I = 5% coin increase, Fortune/Looting II =
-#  10% coin increase and Fortune/Looting III = 15% coin increase.
+# Add more value to coin drops when a Looting or Fortune enchant is used. The configured
+#  value is a percentage per enchantment level. Default value is 0.05 = 5%. Which means:
+#  Fortune/Looting I = 5% coin increase, Fortune/Looting II = 10% coin increase and
+#  Fortune/Looting III = 15% coin increase.
 enchant-increment: 0.05
 
 #  #  #  #  #  #  #  #
 #  Coin Mob Drops    #
 #  #  #  #  #  #  #  #
 
-# Should hostile and passive mobs drop coins? Hostile mobs drop coins by default,
-#  and passive mobs don't.
+# Should hostile and passive mobs drop coins? Hostile mobs drop coins by default, and
+#  passive mobs don't. When set to false, the setting can be overridden by adding the
+#  permission 'coins.drop.hostile_mobs' or 'coins.drop.passive_mobs'.
 hostile-drop: true
 passive-drop: false
 
-# The minimum percentage of damage a player needs to deal to a mob to drop coins.
-#  This can be useful for one-hit mob grinders that damage mobs from fall damage,
-#  for example. Value from 0.00 to 1.00: 0.00 meaning 0%, 1.00 meaning 100%.
+# The minimum percentage of damage a player needs to deal to a mob to drop coins. This can
+#  be useful for one-hit mob grinders that damage mobs from fall damage, for example.
+#  Value from 0.00 to 1.00: 0.00 meaning 0%, 1.00 meaning 100%. This setting can be
+#  bypassed by adding the permission 'coins.bypass.percentage_hit'.
 percentage-player-hit: 0.80
 
-# Set the maximum amount of coin drops (from mob kills) per block location in a
-#  specific time. This can be useful to prevent overuse of grinders. Defaults to 1:
-#  after 1 kill at x/y/z, it won't drop coins there for the amount of hours set at
-#  'location-limit-hours'. Disable by setting to 0. You may want to increase this
-#  value if you're using a mob stacker plugin. (1 minute = 0.016667)
+# Set the maximum amount of coin drops (from mob kills) per block location in a specific
+#  time. This can be useful to prevent overuse of grinders. Defaults to 1: after 1 kill at
+#  x/y/z, it won't drop coins there for the amount of hours set at 'location-limit-hours'
+#  (1 minute = 0.016667). Disable by setting to 0. You may want to increase this value if
+#  you're using a mob stacker plugin. This setting can be bypassed by adding the
+#  permission 'coins.bypass.location_limit'.
 limit-for-location: 1
 location-limit-hours: 1.0
 
-# At what chance should coins drop after a mob has been killed? Default is set to a
-#  chance of 90%. Accepts a value between 0.00 and 1.00.
+# At what chance should coins drop after a mob has been killed? Default is set to a chance
+#  of 90%. Accepts a value between 0.00 and 1.00.
 drop-chance: 0.90
 
-# Should mobs from spawners drop coins? Mobs from spawners won't drop a coin by
-#  default. When 'false', mobs can still drop coins when the player (who killed) has
-#  permission 'coins.spawner'.
+# Should mobs from spawners drop coins? Mobs from spawners won't drop a coin by default.
+#  When set to false, mobs can still drop coins when the player (who killed) has the
+#  permission 'coins.drop.spawner_mobs'.
 spawner-drop: false
 
-# Also drop coins when the mob is NOT killed by a player? So the mob has a natural
-#  death, excluding de-spawns. That means that any death cause will have the mob
-#  drop coins, not just by player kills!
+# Also drop coins when the mob is NOT killed by a player? So the mob has a natural death,
+#  excluding de-spawns. That means that any death cause will have the mob drop coins, not
+#  just by player kills!
 drop-with-any-death: false
 
-# You can add multipliers for specific mobs here. By default, mobs that are enabled
-#  to drop coins drop one coin. Ender Dragon is added by default, so when an Ender
-#  Dragon is killed, 20 coins drop. Set a mob type to 0 (i.e. 'bat': 0) to disable
-#  coins for that specific type. If you want to have no mob multipliers, you can set
-#  'mob-multiplier: {}'. You can also add mobs here that don't drop coins in the
-#  first place, but want them to drop coins anyway. For example if 'passive-drop' is
-#  false, but you still want cows and sheep to drop coins, add them down here.
+# You can add multipliers for specific mobs here. By default, mobs that are enabled to
+#  drop coins drop one coin. Ender Dragon is added by default, so when an Ender Dragon is
+#  killed, 20 coins drop. Set a mob type to 0 (i.e. 'bat': 0) to disable coins for that
+#  specific type. If you want to have no mob multipliers, you can set
+#  'mob-multiplier: {}'. You can also add mobs here that don't drop coins in the first
+#  place, but want them to drop coins anyway. For example if 'passive-drop' is false, but
+#  you still want cows and sheep to drop coins, add them down here.
 # Mobs: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/entity/EntityType.html
 mob-multiplier:
   'ender dragon': 20
   'wither': 10
 
-# Prevent slimes and magma cubes spawned by splits from dropping coins. I've noticed
-#  that players can easily get many coins in slime chunks when keeping this to false.
+# Prevent slimes and magma cubes spawned by splits to drop coins. I've noticed that
+#  players can easily get many coins in slime chunks when keeping this to false. When set
+#  to false, mobs can still drop coins when the player who killed has the permission
+#  'coins.drop.split_mobs'.
 prevent-splits: true
 
 #  #  #  #  #  #  #  #  #
 #  Coin Player Drops    #
 #  #  #  #  #  #  #  #  #
 
-# When a player gets killed by another player, should coins drop?
+# When a player gets killed by another player, should coins drop? When set to false, this
+#  can be overridden by giving the permission 'coins.drop.players'.
 player-drop: true
 
-# Should coins NOT drop when both players have the same IP address? This means that
-#  no coins will be dropped if both players are from the same computer. This
-#  prevents spam killing, from the same computer, for unlimited money, unless you
-#  use this plugin for a local server.
+# Should coins NOT drop when both players have the same IP address? This means that no
+#  coins will be dropped if both players are from the same computer. This prevents spam
+#  killing, from the same computer, for unlimited money, unless you use this plugin for a
+#  local server.
 prevent-alts: true
 
 #  #  #  #  #  #  #  #
 #  Coin Block Drops  #
 #  #  #  #  #  #  #  #
 
-# Drop coins for mined blocks. This setting only works when the block drops a
-#  different item than the block itself. For example a Diamond Ore drops Diamond
-#  without Silk Touch. So it doesn't work when using Silk Touch. That is because
-#  the player would be able to place the block again, and get coins once again.
-#  The number behind the block name below is the multiplier for coin drops.
+# Drop coins for mined blocks. This setting only works when the block drops a different
+#  item than the block itself. For example a Diamond Ore drops Diamond without Silk Touch.
+#  So it doesn't work when using Silk Touch. That is because the player would be able to
+#  place the block again, and get coins once again. The number behind the block name below
+#  is the multiplier for coin drops.
 # Materials: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
 block-drops:
   'diamond ore': 2
@@ -230,10 +236,10 @@ mine-percentage: 0.20
 #  Withdraw    #
 #  #  #  #  #  #
 
-# Let players use /withdraw to get physical coins that they can put somewhere. This
-#  allows players to store the coins physically, outside their balance. When a
-#  withdrawn coin is picked up after it was dropped, it will be deposited to their
-#  balance again. This can also be done by right-clicking the coin.
+# Let players use /withdraw to get physical coins that they can put somewhere. This allows
+#  players to store the coins physically, outside their balance. When a withdrawn coin is
+#  picked up after it was dropped, it will be deposited to their balance again. This can
+#  also be done by right-clicking the coin.
 enable-withdraw: true
 max-withdraw-amount: 10000.00
 
@@ -245,18 +251,19 @@ withdraw-message-position: 'actionbar' # other options: 'subtitle', 'title', 'ch
 #  Hooks    #
 #  #  #  #  #
 
-# MythicMobs :: In the config of MythicMobs you can define custom coin drops. Use
-#  the drop called 'coins' in the MythicMobs config to drop coins from this plugin.
-#  If you have set up custom drops in there, you probably also want to disable coin
-#  drops for Mythic Mobs handled by this plugin, under here.
+# MythicMobs :: In the config of MythicMobs you can define custom coin drops. Use the drop
+#  called 'coins' in the MythicMobs config to drop coins from this plugin. If you have set
+#  up custom drops in there, you probably also want to disable coin drops for MythicMobs
+#  handled by this plugin, under here.
 disable-mythic-mob-handling: false
 
 #  #  #  #  #  #  #
 #  Player Death   #
 #  #  #  #  #  #  #
 
-# Should players lose money on death? It shows a title (in the middle of the screen)
-#  how much they lost on death.
+# Should players lose money on death? It shows a message, configured at 'death-message'
+#  with how much they lost on death. This setting can be bypassed (when set to true) by
+#  adding the permission 'coins.bypass.lose_on_death'.
 lose-on-death: true
 
 # If so, how much will be taken? A random amount between 10 and 30 by default.
@@ -264,9 +271,9 @@ money-taken:
   from: 10.00
   to: 30.00
 
-# Should the plugin take the *amount* of money from them, or the *percentage* of
-#  their money? An amount (take-percentage: false) of 10 to 30 would be $10 to $30.
-#  A percentage (take-percentage: true) of 10 to 30 would be 10% to 30%.
+# Should the plugin take the *amount* of money from them, or the *percentage* of their
+#  money? An amount (take-percentage: false) of 10 to 30 would be $10 to $30. A percentage
+#  (take-percentage: true) of 10 to 30 would be 10% to 30%.
 take-percentage: false
 
 # And should the money be dropped, or just disappear? Disappears by default.

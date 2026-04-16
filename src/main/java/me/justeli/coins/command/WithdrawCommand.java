@@ -3,7 +3,7 @@ package me.justeli.coins.command;
 import me.justeli.coins.Coins;
 import me.justeli.coins.config.Config;
 import me.justeli.coins.config.Message;
-import me.justeli.coins.util.PermissionNode;
+import me.justeli.coins.util.Permissions;
 import me.justeli.coins.util.Util;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -46,7 +46,7 @@ public final class WithdrawCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        if (!sender.hasPermission(PermissionNode.WITHDRAW) || !(sender instanceof Player player)) {
+        if (!Permissions.hasWithdraw(sender) || !(sender instanceof Player player)) {
             Util.sendNoPermission(sender);
             return true;
         }

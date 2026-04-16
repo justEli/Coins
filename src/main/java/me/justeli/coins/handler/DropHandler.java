@@ -3,7 +3,7 @@ package me.justeli.coins.handler;
 import me.justeli.coins.Coins;
 import me.justeli.coins.config.Config;
 import me.justeli.coins.item.CoinMeta;
-import me.justeli.coins.util.PermissionNode;
+import me.justeli.coins.util.Permissions;
 import me.justeli.coins.util.Util;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -66,7 +66,7 @@ public final class DropHandler implements Listener {
             return;
         }
 
-        if (Config.LOSE_ON_DEATH && dead instanceof Player player) {
+        if (Config.LOSE_ON_DEATH && dead instanceof Player player && !Permissions.hasBypassLoseOnDeath(player)) {
             handleLosingOnDeath(player);
         }
 
@@ -80,13 +80,16 @@ public final class DropHandler implements Listener {
             return;
         }
 
-        if (Config.PERCENTAGE_PLAYER_HIT > 0 && getPlayerDamage(dead) / maxHealth.getValue() < Config.PERCENTAGE_PLAYER_HIT) {
-            return;
-        }
-
         Optional<Player> attacker = Util.getRootDamage(dead);
         if (attacker.isEmpty()) {
             return;
+        }
+
+        double percentage = getPlayerDamage(dead) / maxHealth.getValue();
+        if (Config.PERCENTAGE_PLAYER_HIT > 0 && percentage < Config.PERCENTAGE_PLAYER_HIT) {
+            if (!Permissions.hasBypassPercentageHit(attacker.get())) {
+                return;
+            }
         }
 
         handleDropCheck(dead, attacker.get());
@@ -119,11 +122,13 @@ public final class DropHandler implements Listener {
 
     private void handleDropCheck(@NotNull Entity dead, @Nullable Player attacker) {
         if (Config.PREVENT_SPLITS && coins.getUnfairMobHandler().isFromSplit(dead)) {
-            return;
+            if (attacker == null || !Permissions.hasDropSplitMobs(attacker)) {
+                return;
+            }
         }
 
         if (!Config.SPAWNER_DROP && coins.getUnfairMobHandler().isFromSpawner(dead)) {
-            if (attacker == null || !attacker.hasPermission(PermissionNode.SPAWNER)) {
+            if (attacker == null || !Permissions.hasDropSpawnerMobs(attacker)) {
                 return;
             }
         }
@@ -142,15 +147,15 @@ public final class DropHandler implements Listener {
             return;
         }
 
-        if (!Config.HOSTILE_DROP && isHostile) {
+        if (!Config.HOSTILE_DROP && isHostile && !Permissions.hasDropHostileMobs(attacker)) {
             return;
         }
 
-        if (!Config.PASSIVE_DROP && isPassive) {
+        if (!Config.PASSIVE_DROP && isPassive && !Permissions.hasDropPassiveMobs(attacker)) {
             return;
         }
 
-        if (!Config.PLAYER_DROP && isPlayer) {
+        if (!Config.PLAYER_DROP && isPlayer && !Permissions.hasDropPlayers(attacker)) {
             return;
         }
 
@@ -171,7 +176,9 @@ public final class DropHandler implements Listener {
         }
 
         if (!isLocationAvailableAndSet(dead)) {
-            return;
+            if (attacker == null || !Permissions.hasBypassLocationLimit(attacker)) {
+                return;
+            }
         }
 
         int multiplier = Config.MOB_MULTIPLIER.getOrDefault(dead.getType(), 1);

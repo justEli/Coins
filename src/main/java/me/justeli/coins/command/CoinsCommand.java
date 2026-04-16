@@ -4,7 +4,7 @@ import me.justeli.coins.Coins;
 import me.justeli.coins.config.Config;
 import me.justeli.coins.config.Message;
 import me.justeli.coins.item.CoinMeta;
-import me.justeli.coins.util.PermissionNode;
+import me.justeli.coins.util.Permissions;
 import me.justeli.coins.util.Util;
 import me.justeli.coins.util.PluginVersion;
 import net.md_5.bungee.api.ChatColor;
@@ -58,7 +58,7 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
 
         switch (args[0].toLowerCase()) {
             case "reload":
-                if (checkPermission(sender, PermissionNode.COMMAND_RELOAD)) {
+                if (checkPermission(sender, Permissions.hasCommandReload(sender))) {
                     long ms = System.currentTimeMillis();
 
                     coins.getSettings().reload();
@@ -74,7 +74,7 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
                 }
                 break;
             case "settings":
-                if (checkPermission(sender, PermissionNode.COMMAND_SETTINGS)) {
+                if (checkPermission(sender, Permissions.hasCommandSettings(sender))) {
                     int page = args.length > 1? Util.parseInt(args[1]).orElse(1) : 1;
                     TreeSet<String> keys = coins.getSettings().getKeys();
                     int totalPages = keys.size() / 8 + Math.min(keys.size() % 8, 1);
@@ -86,18 +86,18 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
                 }
                 break;
             case "drop":
-                if (checkPermission(sender, PermissionNode.COMMAND_DROP)) {
+                if (checkPermission(sender, Permissions.hasCommandDrop(sender))) {
                     handleDropCoins(sender, args);
                 }
                 break;
             case "remove":
-                if (checkPermission(sender, PermissionNode.COMMAND_REMOVE)) {
+                if (checkPermission(sender, Permissions.hasCommandRemove(sender))) {
                     handleRemoveCoins(sender, args);
                 }
                 break;
             case "lang":
             case "language":
-                if (checkPermission(sender, PermissionNode.COMMAND_LANGUAGE)) {
+                if (checkPermission(sender, Permissions.hasCommandLanguage(sender))) {
                     for (Message message : Message.values()) {
                         sender.sendMessage(message.toString());
                     }
@@ -105,7 +105,7 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
                 break;
             case "version":
             case "update":
-                if (checkPermission(sender, PermissionNode.COMMAND_VERSION)) {
+                if (checkPermission(sender, Permissions.hasCommandVersion(sender))) {
                     sender.sendMessage(String.format(COINS_TITLE, "Version"));
 
                     Optional<PluginVersion> latestVersion = coins.getLatestVersion();
@@ -130,7 +130,7 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
                 }
                 break;
             case "toggle":
-                if (checkPermission(sender, PermissionNode.COMMAND_TOGGLE)) {
+                if (checkPermission(sender, Permissions.hasCommandToggle(sender))) {
                     Message message = coins.toggleDisabled()? Message.ENABLED : Message.DISABLED;
                     sender.sendMessage(Message.GLOBALLY_DISABLED_INFORM.replace(message.toString()));
                     if (coins.isDisabled()) {
@@ -146,8 +146,8 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
         return true;
     }
 
-    private boolean checkPermission(CommandSender sender, String permission) {
-        if (sender.hasPermission(permission)) {
+    private boolean checkPermission(CommandSender sender, boolean permission) {
+        if (permission) {
             return true;
         }
 
@@ -159,38 +159,38 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
     public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {
         List<String> list = new ArrayList<>();
         if (args.length == 1) {
-            if (sender.hasPermission(PermissionNode.COMMAND_DROP)) {
+            if (Permissions.hasCommandDrop(sender)) {
                 list.add("drop");
             }
-            if (sender.hasPermission(PermissionNode.COMMAND_RELOAD)) {
+            if (Permissions.hasCommandReload(sender)) {
                 list.add("reload");
             }
-            if (sender.hasPermission(PermissionNode.COMMAND_SETTINGS)) {
+            if (Permissions.hasCommandSettings(sender)) {
                 list.add("settings");
             }
-            if (sender.hasPermission(PermissionNode.COMMAND_VERSION)) {
+            if (Permissions.hasCommandVersion(sender)) {
                 list.add("version");
             }
-            if (sender.hasPermission(PermissionNode.COMMAND_REMOVE)) {
+            if (Permissions.hasCommandRemove(sender)) {
                 list.add("remove");
             }
-            if (sender.hasPermission(PermissionNode.COMMAND_TOGGLE)) {
+            if (Permissions.hasCommandToggle(sender)) {
                 list.add("toggle");
             }
         }
         else if (args.length == 2) {
-            if (args[0].equalsIgnoreCase("remove") && sender.hasPermission(PermissionNode.COMMAND_REMOVE)) {
+            if (args[0].equalsIgnoreCase("remove") && Permissions.hasCommandRemove(sender)) {
                 list.add("all");
                 list.add("[radius]");
             }
-            if (args[0].equalsIgnoreCase("drop") && sender.hasPermission(PermissionNode.COMMAND_DROP)) {
+            if (args[0].equalsIgnoreCase("drop") && Permissions.hasCommandDrop(sender)) {
                 for (Player onlinePlayer : coins.getServer().getOnlinePlayers()) {
                     list.add(onlinePlayer.getName());
                 }
                 list.add("<x,y,z>");
                 list.add("<x,y,z,world>");
             }
-            if (args[0].equalsIgnoreCase("settings") && sender.hasPermission(PermissionNode.COMMAND_SETTINGS)) {
+            if (args[0].equalsIgnoreCase("settings") && Permissions.hasCommandSettings(sender)) {
                 list.add("1");
                 list.add("2");
                 list.add("3");
@@ -200,12 +200,12 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
             }
         }
         else if (args.length == 3) {
-            if (args[0].equalsIgnoreCase("remove") && sender.hasPermission(PermissionNode.COMMAND_REMOVE)) {
+            if (args[0].equalsIgnoreCase("remove") && Permissions.hasCommandRemove(sender)) {
                 list.add("<amount>");
             }
         }
         else if (args.length == 4) {
-            if (args[0].equalsIgnoreCase("remove") && sender.hasPermission(PermissionNode.COMMAND_REMOVE)) {
+            if (args[0].equalsIgnoreCase("remove") && Permissions.hasCommandRemove(sender)) {
                 list.add("[radius]");
             }
         }
@@ -369,37 +369,37 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
         if (coins.isDisabled()) {
             notice = " " + Message.GLOBALLY_DISABLED;
         }
-        else if (latestVersion.isPresent() && !latestVersion.get().tag().equals(currentVersion) && sender.hasPermission(PermissionNode.COMMAND_VERSION)) {
+        else if (latestVersion.isPresent() && !latestVersion.get().tag().equals(currentVersion) && Permissions.hasCommandVersion(sender)) {
             notice = " " + Message.OUTDATED.replace("/coins update");
         }
 
         sender.sendMessage(String.format(COINS_TITLE, currentVersion) + ChatColor.DARK_RED + notice);
 
-        if (sender.hasPermission(PermissionNode.COMMAND_DROP)) {
+        if (Permissions.hasCommandDrop(sender)) {
             sender.sendMessage(Message.DROP_USAGE.toString());
             lines++;
         }
-        if (sender.hasPermission(PermissionNode.COMMAND_REMOVE)) {
+        if (Permissions.hasCommandRemove(sender)) {
             sender.sendMessage(Message.REMOVE_USAGE.toString());
             lines++;
         }
-        if (sender.hasPermission(PermissionNode.COMMAND_SETTINGS)) {
+        if (Permissions.hasCommandSettings(sender)) {
             sender.sendMessage(Message.SETTINGS_USAGE.toString());
             lines++;
         }
-        if (sender.hasPermission(PermissionNode.COMMAND_RELOAD)) {
+        if (Permissions.hasCommandReload(sender)) {
             sender.sendMessage(Message.RELOAD_USAGE.toString());
             lines++;
         }
-        if (sender.hasPermission(PermissionNode.COMMAND_VERSION)) {
+        if (Permissions.hasCommandVersion(sender)) {
             sender.sendMessage(Message.VERSION_CHECK.toString());
             lines++;
         }
-        if (sender.hasPermission(PermissionNode.COMMAND_TOGGLE)) {
+        if (Permissions.hasCommandToggle(sender)) {
             sender.sendMessage(Message.TOGGLE_USAGE.toString());
             lines++;
         }
-        if (Config.ENABLE_WITHDRAW && sender.hasPermission(PermissionNode.WITHDRAW)) {
+        if (Config.ENABLE_WITHDRAW && Permissions.hasWithdraw(sender)) {
             sender.sendMessage(Message.WITHDRAW_USAGE.toString());
             lines++;
         }

@@ -10,10 +10,19 @@ import java.util.regex.Pattern;
  */
 public final class VersionUtil {
     public enum Platform {
-        BUKKIT,
-        SPIGOT,
-        PAPER,
-        FOLIA
+        BUKKIT("Bukkit"),
+        SPIGOT("Spigot"),
+        PAPER("Paper"),
+        FOLIA("Folia");
+
+        private final String name;
+        Platform(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
     }
 
     private static final Platform PLATFORM = findPlatform();

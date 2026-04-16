@@ -3,9 +3,8 @@ package me.justeli.coins.handler;
 import me.justeli.coins.Coins;
 import me.justeli.coins.event.PickupEvent;
 import me.justeli.coins.config.Config;
-import me.justeli.coins.util.PermissionNode;
+import me.justeli.coins.util.Permissions;
 import me.justeli.coins.util.Util;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,7 +14,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -62,7 +60,7 @@ public final class PickupHandler implements Listener {
         event.setCancelled(true);
 
         Player player = event.getPlayer();
-        if (player.hasPermission(PermissionNode.DISABLE) && !player.isOp() && !player.hasPermission("*")) {
+        if (Permissions.hasCoinsDisabled(player)) {
             return;
         }
 
