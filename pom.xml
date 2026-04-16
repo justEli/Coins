@@ -17,6 +17,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <versions.minecraft>1.19</versions.minecraft>
+        <versions.minecraft.minor>1.19.4</versions.minecraft.minor>
     </properties>
 
     <build>
@@ -93,15 +94,21 @@
 
     <dependencies>
         <dependency>
+            <groupId>dev.folia</groupId>
+            <artifactId>folia-api</artifactId>
+            <version>${versions.minecraft.minor}-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>${versions.minecraft}-R0.1-SNAPSHOT</version>
+            <version>${versions.minecraft.minor}-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>${versions.minecraft}-R0.1-SNAPSHOT</version>
+            <version>${versions.minecraft.minor}-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

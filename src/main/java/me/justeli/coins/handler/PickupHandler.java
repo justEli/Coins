@@ -5,6 +5,7 @@ import me.justeli.coins.event.PickupEvent;
 import me.justeli.coins.config.Config;
 import me.justeli.coins.util.PermissionNode;
 import me.justeli.coins.util.Util;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -29,7 +30,6 @@ public final class PickupHandler implements Listener {
         coins.parseEventHandlers(this);
     }
 
-    private final Set<UUID> thrownCoinCache = ConcurrentHashMap.newKeySet();
     private final Map<UUID, Double> pickupAmountCache = new ConcurrentHashMap<>();
     private final Map<UUID, Long> pickupTimeCache = new ConcurrentHashMap<>();
 
@@ -41,7 +41,7 @@ public final class PickupHandler implements Listener {
         }
 
         // don't let mobs pick up coins that are already being given to players
-        if (!thrownCoinCache.contains(event.getItem().getUniqueId())) {
+        if (event.getItem().getPickupDelay() > 0) {
             return;
         }
 
@@ -59,25 +59,21 @@ public final class PickupHandler implements Listener {
             return;
         }
 
-        Player player = event.getPlayer();
         event.setCancelled(true);
 
+        Player player = event.getPlayer();
         if (player.hasPermission(PermissionNode.DISABLE) && !player.isOp() && !player.hasPermission("*")) {
             return;
         }
 
-        if (thrownCoinCache.contains(item.getUniqueId())) {
+        if (item.getPickupDelay() > 0) {
             return;
         }
 
-        thrownCoinCache.add(item.getUniqueId());
-        item.setVelocity(new Vector(0, 0.4, 0));
-        item.setPickupDelay(1200); // todo can thrownCoinCache be removed?
+        item.setVelocity(new Vector(0, .4, 0));
+        item.setPickupDelay(1200); // to prevent pickup while coin is thrown up
 
-        coins.sync(5, () -> {
-            item.remove();
-            thrownCoinCache.remove(item.getUniqueId());
-        });
+        coins.getScheduler().runEntityTaskLater(item, 5, item::remove);
 
         double amount = coins.getCoinMeta().getValue(item.getItemStack());
         if (amount == 0) {

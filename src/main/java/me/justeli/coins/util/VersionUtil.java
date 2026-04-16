@@ -12,11 +12,16 @@ public final class VersionUtil {
     public enum Platform {
         BUKKIT,
         SPIGOT,
-        PAPER
+        PAPER,
+        FOLIA
     }
 
     private static final Platform PLATFORM = findPlatform();
     private static final int VERSION = findVersion();
+
+    public static boolean isPlatformAtLeast(Platform platform) {
+        return PLATFORM.ordinal() >= platform.ordinal();
+    }
 
     public static Platform getPlatform() {
         return PLATFORM;
@@ -37,7 +42,10 @@ public final class VersionUtil {
     }
 
     private static Platform findPlatform() {
-        if (hasClass("com.destroystokyo.paper.PaperConfig") || hasClass("io.papermc.paper.configuration.Configuration")) {
+        if (hasClass("io.papermc.paper.threadedregions.RegionizedServer")) {
+            return Platform.FOLIA;
+        }
+        else if (hasClass("com.destroystokyo.paper.PaperConfig") || hasClass("io.papermc.paper.configuration.Configuration")) {
             return Platform.PAPER;
         }
         else if (hasClass("org.spigotmc.SpigotConfig")) {

@@ -18,7 +18,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,7 +28,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.SplittableRandom;
 import java.util.TreeSet;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Eli
@@ -349,7 +347,9 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
 
             float random = RANDOM.nextFloat() * 3F;
             item.setVelocity(new Vector(0, random, 0));
-            coins.sync((long) (random * 5F), item::remove);
+
+            // works on Folia
+            coins.getScheduler().runEntityTaskLater(item, (long) (random * 5F), item::remove);
 
             amount++;
         }
@@ -415,29 +415,21 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
-        Location dropLocation = location.clone().add(0.0, 0.5, 0.0);
+        Location dropLocation = location.add(0.0, 0.5, 0.0);
         ItemStack coin = coins.getCreateCoin().createDropped();
 
-        AtomicInteger ticks = new AtomicInteger();
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                Item item = location.getWorld().dropItem(
-                    dropLocation,
-                    coins.meta(coin).setData(CoinMeta.COINS_RANDOM, RANDOM.nextDouble()).build()
-                );
+        coins.getScheduler().runLocationTaskRepeated(location, amount, 1, () -> {
+            Item item = location.getWorld().dropItem(
+                dropLocation,
+                coins.meta(coin).setData(CoinMeta.COINS_RANDOM, RANDOM.nextDouble()).build()
+            );
 
-                item.setPickupDelay(30);
-                item.setVelocity(new Vector(
-                    (RANDOM.nextDouble() - 0.5) * radius / 10,
-                    RANDOM.nextDouble() * radius / 5,
-                    (RANDOM.nextDouble() - 0.5) * radius / 10
-                ));
-
-                if (ticks.addAndGet(1) >= amount) {
-                    this.cancel();
-                }
-            }
-        }.runTaskTimer(coins, 0, 1);
+            item.setPickupDelay(30);
+            item.setVelocity(new Vector(
+                (RANDOM.nextDouble() - 0.5) * radius / 10,
+                RANDOM.nextDouble() * radius / 5,
+                (RANDOM.nextDouble() - 0.5) * radius / 10
+            ));
+        });
     }
 }

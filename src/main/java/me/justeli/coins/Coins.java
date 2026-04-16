@@ -23,6 +23,7 @@ import me.justeli.coins.item.CreateCoin;
 import me.justeli.coins.item.MetaBuilder;
 import me.justeli.coins.util.PluginVersion;
 import me.justeli.coins.util.PluginVersionUtil;
+import me.justeli.coins.util.ScheduleUtil;
 import me.justeli.coins.util.VersionUtil;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
@@ -53,8 +54,8 @@ public final class Coins extends JavaPlugin {
         "Coins only supports Minecraft version 1.19 and newer.";
 
     private static final String USING_BUKKIT = """
-        You seem to be using Bukkit, but the plugin Coins requires at least Spigot! Please use Spigot \
-        or Paper. Moving from Bukkit to Spigot will NOT cause any problems with other plugins, since \
+        You seem to be using Bukkit, but the plugin Coins requires at least Spigot! Please use Spigot, \
+        Paper, or Folia. Moving from Bukkit to Spigot will NOT cause any problems with other plugins, since \
         Spigot only adds more features to Bukkit.""";
 
     private static final String LACKING_ECONOMY =
@@ -77,6 +78,7 @@ public final class Coins extends JavaPlugin {
             disablePlugin(USING_BUKKIT);
         }
 
+        this.scheduleUtil = new ScheduleUtil(this);
         this.economy = new Economies(this);
 
         if (!economy.getMissingPluginNames().isEmpty()) {
@@ -86,12 +88,6 @@ public final class Coins extends JavaPlugin {
                 console(Level.SEVERE, reason);
                 disablePlugin(reason);
             }
-        }
-
-        if (VersionUtil.getPlatform() != VersionUtil.Platform.PAPER) {
-            console(Level.WARNING,
-                "Players with a full inventory will be able to pick up coins when Paper is installed."
-            );
         }
 
         if (getServer().getPluginManager().isPluginEnabled("MythicMobs")) {
@@ -121,7 +117,7 @@ public final class Coins extends JavaPlugin {
             this.unfairMobHandler = new UnfairMobHandler(this);
             this.pickupHandler = new PickupHandler(this);
 
-            if (VersionUtil.getPlatform() == VersionUtil.Platform.PAPER) {
+            if (VersionUtil.isPlatformAtLeast(VersionUtil.Platform.PAPER)) {
                 new PaperEventListener(this);
             }
             else {
@@ -157,10 +153,6 @@ public final class Coins extends JavaPlugin {
         getServer().getPluginManager().registerEvents(listener, this);
     }
 
-    public void sync(long ticks, Runnable runnable) {
-        getServer().getScheduler().runTaskLater(this, runnable, ticks);
-    }
-
     public void line(Level type) {
         console(type, "------------------------------------------------------------------");
     }
@@ -170,6 +162,11 @@ public final class Coins extends JavaPlugin {
     }
 
     // getters from other places
+
+    private ScheduleUtil scheduleUtil;
+    public ScheduleUtil getScheduler() {
+        return scheduleUtil;
+    }
 
     private Economies economy;
     public Economies getEconomy() {

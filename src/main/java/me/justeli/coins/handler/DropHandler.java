@@ -107,6 +107,7 @@ public final class DropHandler implements Listener {
             coins.getEconomy().withdraw(dead.getUniqueId(), take, () -> {
                 Util.sendMessage(dead, Config.DEATH_MESSAGE, Config.DEATH_MESSAGE_POSITION, take);
                 if (Config.DROP_ON_DEATH && dead.getLocation().getWorld() != null) {
+                    // works on Folia
                     dead.getWorld().dropItem(
                         dead.getLocation(),
                         coins.getCreateCoin().createOther().setData(CoinMeta.COINS_WORTH, take).build()
@@ -173,7 +174,8 @@ public final class DropHandler implements Listener {
             return;
         }
 
-        dropCoins(Config.MOB_MULTIPLIER.getOrDefault(dead.getType(), 1), attacker, dead.getLocation());
+        int multiplier = Config.MOB_MULTIPLIER.getOrDefault(dead.getType(), 1);
+        dropCoins(multiplier, attacker, dead.getLocation(), false);
     }
 
     private boolean isLocationAvailableAndSet(Entity dead) {
@@ -223,12 +225,7 @@ public final class DropHandler implements Listener {
             return;
         }
 
-        // todo i believe this can be replaced with World#dropItemNaturally without delay
-        coins.sync(1, () -> dropCoins(
-            multiplier,
-            event.getPlayer(),
-            event.getBlock().getLocation().clone().add(0.5, 0.5, 0.5)
-        ));
+        dropCoins(multiplier, event.getPlayer(), event.getBlock().getLocation().add(.5, .5, .5), true);
     }
 
     // if the block that is mined is exactly the same as the items it drops
@@ -242,7 +239,7 @@ public final class DropHandler implements Listener {
         return false;
     }
 
-    private void dropCoins(int amount, @Nullable Player player, @NotNull Location location) {
+    private void dropCoins(int amount, @Nullable Player player, @NotNull Location location, boolean block) {
         if (location.getWorld() == null) {
             return;
         }
@@ -265,7 +262,16 @@ public final class DropHandler implements Listener {
         }
 
         for (int i = 0; i < amount; i++) {
-            location.getWorld().dropItem(location, coins.getCreateCoin().createDropped(increment));
+            // works on Folia
+            ItemStack coin = coins.getCreateCoin().createDropped(increment);
+            if (block) {
+                coins.getScheduler().runLocationTaskLater(location, 1, () ->
+                    location.getWorld().dropItemNaturally(location, coin)
+                );
+            }
+            else {
+                location.getWorld().dropItem(location, coin);
+            }
         }
     }
 

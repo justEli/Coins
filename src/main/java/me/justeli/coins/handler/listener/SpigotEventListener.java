@@ -7,6 +7,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 
+import java.util.logging.Level;
+
 /**
  * @author Eli
  * @since September 13, 2020 (creation)
@@ -16,6 +18,10 @@ public final class SpigotEventListener implements Listener {
     public SpigotEventListener(Coins coins) {
         this.coins = coins;
         coins.parseEventHandlers(this);
+
+        coins.console(Level.WARNING,
+            "Players with a full inventory will be able to pick up coins when Paper is installed."
+        );
     }
 
     @EventHandler(ignoreCancelled = true)
