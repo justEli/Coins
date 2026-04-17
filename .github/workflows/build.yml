@@ -2,11 +2,11 @@ name: Build Coins Plugin
 
 on:
   push:
-    branches: [ master, main ]
+    branches: [ master, main, version/1 ]
     tags:
       - 'v*'
   pull_request:
-    branches: [ master, main ]
+    branches: [ master, main, version/1 ]
   workflow_dispatch:
 
 jobs:
