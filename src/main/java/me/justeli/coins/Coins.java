@@ -3,6 +3,7 @@ package me.justeli.coins;
 import me.justeli.coins.command.CoinsCommand;
 import me.justeli.coins.command.DisabledCommand;
 import me.justeli.coins.command.WithdrawCommand;
+import me.justeli.coins.handler.ClickPickupHandler;
 import me.justeli.coins.handler.HopperHandler;
 import me.justeli.coins.handler.InventoryHandler;
 import me.justeli.coins.handler.InteractionHandler;
@@ -21,6 +22,7 @@ import me.justeli.coins.hook.Economies;
 import me.justeli.coins.item.CoinMeta;
 import me.justeli.coins.item.CreateCoin;
 import me.justeli.coins.item.MetaBuilder;
+import me.justeli.coins.util.BlockDisplayManager; // -------------------- by AllFiRE
 import me.justeli.coins.util.PluginVersion;
 import me.justeli.coins.util.PluginVersionUtil;
 import me.justeli.coins.util.ScheduleUtil;
@@ -113,6 +115,10 @@ public final class Coins extends JavaPlugin {
             this.coinMeta = new CoinMeta(this);
             this.createCoin = new CreateCoin(this);
 
+            // -------------------- by AllFiRE
+            BlockDisplayManager.init(this);
+            // -------------------- by AllFiRE
+
             // register events
             this.unfairMobHandler = new UnfairMobHandler(this);
             this.pickupHandler = new PickupHandler(this);
@@ -129,6 +135,7 @@ public final class Coins extends JavaPlugin {
             new InteractionHandler(this);
             new InventoryHandler(this);
             new ModificationHandler(this);
+            new ClickPickupHandler(this); // -------------------- by AllFiRE
 
             // register commands
             new CoinsCommand(this);
