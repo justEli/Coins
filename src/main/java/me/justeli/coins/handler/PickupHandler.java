@@ -13,7 +13,9 @@ import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
+import java.util.HashSet; // -------------------- by AllFiRE
 import java.util.Map;
+import java.util.Set; // -------------------- by AllFiRE
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -28,9 +30,13 @@ public final class PickupHandler implements Listener {
         coins.parseEventHandlers(this);
     }
 
+    // -------------------- by AllFiRE
+    private final Set<UUID> thrownCoinCache = new HashSet<>();
+    // -------------------- by AllFiRE
     private final Map<UUID, Double> pickupAmountCache = new ConcurrentHashMap<>();
     private final Map<UUID, Long> pickupTimeCache = new ConcurrentHashMap<>();
 
+    // -------------------- by AllFiRE
     @EventHandler
     void onEntityPickupItemEvent(EntityPickupItemEvent event) {
         // handled properly with PickupEvent
@@ -39,13 +45,15 @@ public final class PickupHandler implements Listener {
         }
 
         // don't let mobs pick up coins that are already being given to players
-        if (event.getItem().getPickupDelay() > 0) {
+        if (!thrownCoinCache.contains(event.getItem().getUniqueId())) {
             return;
         }
 
         event.setCancelled(true);
     }
+    // -------------------- by AllFiRE
 
+    // -------------------- by AllFiRE
     @EventHandler(ignoreCancelled = true)
     void onPickupEvent(PickupEvent event) {
         if (Util.isDisabledHere(event.getPlayer().getWorld())) {
@@ -64,16 +72,25 @@ public final class PickupHandler implements Listener {
             return;
         }
 
-        if (item.getPickupDelay() > 0) {
+        if (item.getPickupDelay() > 0 && item.getTicksLived() < 2) {
             return;
         }
+
+        double amount = coins.getCoinMeta().getValue(item.getItemStack());
+
+        if (thrownCoinCache.contains(item.getUniqueId())) {
+            return;
+        }
+        thrownCoinCache.add(item.getUniqueId());
 
         item.setVelocity(new Vector(0, .4, 0));
         item.setPickupDelay(1200); // to prevent pickup while coin is thrown up
 
-        coins.getScheduler().runEntityTaskLater(item, 5, item::remove);
+        coins.getScheduler().runEntityTaskLater(item, 5, () -> {
+            item.remove();
+            thrownCoinCache.remove(item.getUniqueId());
+        });
 
-        double amount = coins.getCoinMeta().getValue(item.getItemStack());
         if (amount == 0) {
             depositRandomMoney(item.getItemStack(), player);
         }
@@ -85,6 +102,7 @@ public final class PickupHandler implements Listener {
             Util.playCoinPickupSound(player);
         }
     }
+    // -------------------- by AllFiRE
 
     public void depositRandomMoney(ItemStack item, Player player) {
         if (Config.DROP_EACH_COIN) {
