@@ -284,6 +284,12 @@ death-message: '&4- &c{currency}{amount}'
 death-message-position: 'subtitle' # other options: 'actionbar', 'title', 'chat'
 
 # ---------------------------------------------------------------------------------------- by AllFiRE
+# Coin Pickup Method
+# When enabled, players must click on coins to pick them up instead of walking over them
+click-pickup-enabled: false
+# Which mouse button to use for pickup: LEFT or RIGHT
+click-pickup-button: "RIGHT"
+
 # Coin Display System
 # Options: item (physical items), hologram (TextDisplay), blockdisplay (BlockDisplay)
 coin-display-type: "blockdisplay"
