@@ -282,3 +282,74 @@ drop-on-death: false
 # The format of the message in (the middle of, by default) their screen.
 death-message: '&4- &c{currency}{amount}'
 death-message-position: 'subtitle' # other options: 'actionbar', 'title', 'chat'
+
+# ---------------------------------------------------------------------------------------- by AllFiRE
+# Coin Display System
+# Options: item (physical items), hologram (TextDisplay), blockdisplay (BlockDisplay)
+coin-display-type: "blockdisplay"
+
+# BlockDisplay Settings
+block-display-enabled: false
+
+# Type of display: HEAD (player head with texture), ITEM (item texture), MATERIAL (any block)
+block-display-type: "ITEM"
+
+# Head/Skull settings
+block-display-skull-texture: ""  # Base64 texture for custom head
+block-display-skull-type: "PLAYER_HEAD"  # PLAYER_HEAD, ZOMBIE_HEAD, etc.
+
+# Item settings (used when type is ITEM)
+block-display-item-type: "GOLD_INGOT"  # Any item material
+
+# Material settings (used when type is MATERIAL)
+block-display-material: "GOLD_BLOCK"  # Any block material
+
+# Scale settings - size of the display
+block-display-scale-x: 0.5
+block-display-scale-y: 0.5
+block-display-scale-z: 0.5
+
+# Position offset from the drop location
+block-display-offset-x: 0.0
+block-display-offset-y: 0.1  # Slightly above ground
+block-display-offset-z: 0.0
+
+# Center the display on the middle of the block
+block-display-center-on-block: true
+
+# Fine-tuning translation (relative to the centered position)
+block-display-translation-x: 0.0
+block-display-translation-y: 0.0
+block-display-translation-z: 0.0
+
+# Rotation settings
+block-display-rotation-enabled: true
+block-display-rotation-speed: 2.0  # Degrees per tick (20 ticks = 1 second)
+block-display-rotation-axis: "Y"    # X, Y, or Z
+
+# Billboard mode: FIXED, VERTICAL, HORIZONTAL, CENTER
+block-display-billboard: "CENTER"
+
+# Duration in seconds (0 = stays until picked up)
+block-display-duration: 0
+block-display-pickup-duration: 3  # Duration for pickup effect messages
+
+# Animation settings
+block-display-animation-enabled: true
+block-display-animation-duration: 40  # Ticks for full animation cycle
+block-display-animation-bobbing: true  # Bob up and down
+block-display-animation-bob-height: 0.1  # How high to bob
+block-display-animation-pulse: false  # Pulse scale effect
+block-display-animation-pulse-amount: 0.1  # How much to pulse
+
+# Brightness (makes it visible in dark areas)
+block-display-brightness-enabled: true
+block-display-brightness-block: 15  # 0-15
+block-display-brightness-sky: 15    # 0-15
+
+# Glow effect
+block-display-glow-enabled: false
+block-display-glow-color: "FFD700"  # Gold color in hex (without #)
+
+# View range in blocks
+block-display-view-range: 16.0
