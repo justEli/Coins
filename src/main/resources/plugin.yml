@@ -6,7 +6,7 @@ description: '${project.description}'
 api-version: '${versions.minecraft}'
 authors: [JustEli]
 folia-supported: true
-softdepend: [Vault, WorldGuard, mcMMO, MythicMobs]
+softdepend: [Vault, MythicMobs]
 commands:
   coins:
     description: 'Command for showing all available commands from Coins. Also used for various admin tools.'
