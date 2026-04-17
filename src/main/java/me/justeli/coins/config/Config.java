@@ -184,121 +184,116 @@ public class Config {
     @ConfigEntry("block-drops")
     protected static Map<String, Integer> RAW_BLOCK_DROPS = new HashMap<>();
 
-    //--------------------------------------------------------------------------------------- by AllFiRE
+    // --------------------------------------------------------------------------------------- by AllFiRE
     // BlockDisplay Settings
-    @ConfigEntry (value = "block-display-enabled", required = false) 
+    @ConfigEntry(value = "block-display-enabled", required = false)
     public static Boolean BLOCK_DISPLAY_ENABLED = true;
 
-    @ConfigEntry (value = "block-display-type", required = false) 
-    public static String BLOCK_DISPLAY_TYPE = "ITEM"; // HEAD, ITEM, MATERIAL
+    @ConfigEntry(value = "block-display-type", required = false)
+    public static String BLOCK_DISPLAY_TYPE = "ITEM";
 
-    // Head/Skull settings
-    @ConfigEntry (value = "block-display-skull-texture", required = false) 
+    @ConfigEntry(value = "block-display-skull-texture", required = false)
     public static String BLOCK_DISPLAY_SKULL_TEXTURE = "";
 
-    @ConfigEntry (value = "block-display-skull-type", required = false) 
+    @ConfigEntry(value = "block-display-skull-type", required = false)
     public static String BLOCK_DISPLAY_SKULL_TYPE = "PLAYER_HEAD";
 
-    // Item settings
-    @ConfigEntry (value = "block-display-item-type", required = false) 
+    @ConfigEntry(value = "block-display-item-type", required = false)
     public static String BLOCK_DISPLAY_ITEM_TYPE = "GOLD_INGOT";
 
-    // Material settings
-    @ConfigEntry (value = "block-display-material", required = false) 
+    @ConfigEntry(value = "block-display-material", required = false)
     public static String BLOCK_DISPLAY_MATERIAL = "GOLD_BLOCK";
 
-    // Scale settings (XYZ)
-    @ConfigEntry (value = "block-display-scale-x", required = false) 
+    @ConfigEntry(value = "block-display-scale-x", required = false)
     public static Float BLOCK_DISPLAY_SCALE_X = 0.5f;
 
-    @ConfigEntry (value = "block-display-scale-y", required = false) 
+    @ConfigEntry(value = "block-display-scale-y", required = false)
     public static Float BLOCK_DISPLAY_SCALE_Y = 0.5f;
 
-    @ConfigEntry (value = "block-display-scale-z", required = false) 
+    @ConfigEntry(value = "block-display-scale-z", required = false)
     public static Float BLOCK_DISPLAY_SCALE_Z = 0.5f;
 
-    // Position offset from drop location
-    @ConfigEntry (value = "block-display-offset-x", required = false) 
+    @ConfigEntry(value = "block-display-offset-x", required = false)
     public static Double BLOCK_DISPLAY_OFFSET_X = 0.0;
 
-    @ConfigEntry (value = "block-display-offset-y", required = false) 
+    @ConfigEntry(value = "block-display-offset-y", required = false)
     public static Double BLOCK_DISPLAY_OFFSET_Y = 0.1;
 
-    @ConfigEntry (value = "block-display-offset-z", required = false) 
+    @ConfigEntry(value = "block-display-offset-z", required = false)
     public static Double BLOCK_DISPLAY_OFFSET_Z = 0.0;
 
-    // Center on block
-    @ConfigEntry (value = "block-display-center-on-block", required = false) 
+    @ConfigEntry(value = "block-display-center-on-block", required = false)
     public static Boolean BLOCK_DISPLAY_CENTER_ON_BLOCK = true;
 
-    // Translation (fine-tuning position within the block)
-    @ConfigEntry (value = "block-display-translation-x", required = false) 
+    @ConfigEntry(value = "block-display-translation-x", required = false)
     public static Float BLOCK_DISPLAY_TRANSLATION_X = 0.0f;
 
-    @ConfigEntry (value = "block-display-translation-y", required = false) 
+    @ConfigEntry(value = "block-display-translation-y", required = false)
     public static Float BLOCK_DISPLAY_TRANSLATION_Y = 0.0f;
 
-    @ConfigEntry (value = "block-display-translation-z", required = false) 
+    @ConfigEntry(value = "block-display-translation-z", required = false)
     public static Float BLOCK_DISPLAY_TRANSLATION_Z = 0.0f;
 
-    // Rotation settings
-    @ConfigEntry (value = "block-display-rotation-enabled", required = false) 
+    @ConfigEntry(value = "block-display-rotation-enabled", required = false)
     public static Boolean BLOCK_DISPLAY_ROTATION_ENABLED = true;
 
-    @ConfigEntry (value = "block-display-rotation-speed", required = false) 
-    public static Float BLOCK_DISPLAY_ROTATION_SPEED = 2.0f; // degrees per tick
+    @ConfigEntry(value = "block-display-rotation-speed", required = false)
+    public static Float BLOCK_DISPLAY_ROTATION_SPEED = 2.0f;
 
-    @ConfigEntry (value = "block-display-rotation-axis", required = false) 
-    public static String BLOCK_DISPLAY_ROTATION_AXIS = "Y"; // X, Y, Z
+    @ConfigEntry(value = "block-display-rotation-axis", required = false)
+    public static String BLOCK_DISPLAY_ROTATION_AXIS = "Y";
 
-    // Billboard mode
-    @ConfigEntry (value = "block-display-billboard", required = false) 
-    public static String BLOCK_DISPLAY_BILLBOARD = "CENTER"; // FIXED, VERTICAL, HORIZONTAL, CENTER
+    @ConfigEntry(value = "block-display-billboard", required = false)
+    public static String BLOCK_DISPLAY_BILLBOARD = "CENTER";
 
-    // Duration (seconds, 0 = infinite until picked up)
-    @ConfigEntry (value = "block-display-duration", required = false) 
+    @ConfigEntry(value = "block-display-duration", required = false)
     public static Integer BLOCK_DISPLAY_DURATION = 0;
 
-    @ConfigEntry (value = "block-display-pickup-duration", required = false) 
+    @ConfigEntry(value = "block-display-pickup-duration", required = false)
     public static Integer BLOCK_DISPLAY_PICKUP_DURATION = 3;
 
-    // Animation settings
-    @ConfigEntry (value = "block-display-animation-enabled", required = false) 
+    @ConfigEntry(value = "block-display-animation-enabled", required = false)
     public static Boolean BLOCK_DISPLAY_ANIMATION_ENABLED = true;
 
-    @ConfigEntry (value = "block-display-animation-duration", required = false) 
-    public static Integer BLOCK_DISPLAY_ANIMATION_DURATION = 40; // ticks
+    @ConfigEntry(value = "block-display-animation-duration", required = false)
+    public static Integer BLOCK_DISPLAY_ANIMATION_DURATION = 40;
 
-    @ConfigEntry (value = "block-display-animation-bobbing", required = false) 
+    @ConfigEntry(value = "block-display-animation-bobbing", required = false)
     public static Boolean BLOCK_DISPLAY_ANIMATION_BOBBING = true;
 
-    @ConfigEntry (value = "block-display-animation-bob-height", required = false) 
+    @ConfigEntry(value = "block-display-animation-bob-height", required = false)
     public static Double BLOCK_DISPLAY_ANIMATION_BOB_HEIGHT = 0.1;
 
-    @ConfigEntry (value = "block-display-animation-pulse", required = false) 
+    @ConfigEntry(value = "block-display-animation-pulse", required = false)
     public static Boolean BLOCK_DISPLAY_ANIMATION_PULSE = false;
 
-    @ConfigEntry (value = "block-display-animation-pulse-amount", required = false) 
+    @ConfigEntry(value = "block-display-animation-pulse-amount", required = false)
     public static Float BLOCK_DISPLAY_ANIMATION_PULSE_AMOUNT = 0.1f;
 
-    // Brightness
-    @ConfigEntry (value = "block-display-brightness-enabled", required = false) 
+    @ConfigEntry(value = "block-display-brightness-enabled", required = false)
     public static Boolean BLOCK_DISPLAY_BRIGHTNESS_ENABLED = true;
 
-    @ConfigEntry (value = "block-display-brightness-block", required = false) 
+    @ConfigEntry(value = "block-display-brightness-block", required = false)
     public static Integer BLOCK_DISPLAY_BRIGHTNESS_BLOCK = 15;
 
-    @ConfigEntry (value = "block-display-brightness-sky", required = false) 
+    @ConfigEntry(value = "block-display-brightness-sky", required = false)
     public static Integer BLOCK_DISPLAY_BRIGHTNESS_SKY = 15;
 
-    // Glow effect
-    @ConfigEntry (value = "block-display-glow-enabled", required = false) 
+    @ConfigEntry(value = "block-display-glow-enabled", required = false)
     public static Boolean BLOCK_DISPLAY_GLOW_ENABLED = false;
 
-    @ConfigEntry (value = "block-display-glow-color", required = false) 
-    public static String BLOCK_DISPLAY_GLOW_COLOR = "FFD700"; // Gold color in hex
+    @ConfigEntry(value = "block-display-glow-color", required = false)
+    public static String BLOCK_DISPLAY_GLOW_COLOR = "FFD700";
 
-    // View range
-    @ConfigEntry (value = "block-display-view-range", required = false) 
+    @ConfigEntry(value = "block-display-view-range", required = false)
     public static Float BLOCK_DISPLAY_VIEW_RANGE = 32.0f;
+
+    @ConfigEntry(value = "coin-display-type", required = false)
+    public static String COIN_DISPLAY_TYPE = "item";
+
+    @ConfigEntry(value = "click-pickup-enabled", required = false)
+    public static Boolean CLICK_PICKUP_ENABLED = false;
+
+    @ConfigEntry(value = "click-pickup-button", required = false)
+    public static String CLICK_PICKUP_BUTTON = "RIGHT";
 }
