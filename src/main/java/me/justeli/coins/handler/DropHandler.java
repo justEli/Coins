@@ -255,7 +255,7 @@ public final class DropHandler implements Listener {
 
         double increment = 1;
         if (player != null && Config.ENCHANT_INCREMENT > 0) {
-            Enchantment enchant = block ? Enchantment.FORTUNE : Enchantment.LOOTING;
+            Enchantment enchant = block ? Enchantment.LOOT_BONUS_BLOCKS : Enchantment.LOOT_BONUS_MOBS;
             int lootingLevel = player.getInventory().getItemInMainHand().getEnchantmentLevel(enchant);
             if (lootingLevel > 0) {
                 increment += lootingLevel * Config.ENCHANT_INCREMENT;
