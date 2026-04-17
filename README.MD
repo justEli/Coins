@@ -4,7 +4,7 @@ Coins is a plugin that allows players to collect coins for killing mobs and mini
 
 - [SpigotMC](https://www.spigotmc.org/resources/coins.33382/)
 - [Hangar (Paper)](https://hangar.papermc.io/Eli/Coins)
-- [Modrinth](https://modrinth.com/plugin/coinsplugin)
+- [Modrinth](https://modrinth.com/plugin/coinsplugin) 
 
 ![](https://img.shields.io/bstats/players/831?style=flat-square)
 ![](https://img.shields.io/bstats/servers/831?style=flat-square)
