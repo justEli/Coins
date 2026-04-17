@@ -1,4 +1,4 @@
-# Coins
+#  Coins
 
 Coins is a plugin that allows players to collect coins for killing mobs and mining precious blocks. It also comes with the ability to withdraw balance into physical coins. This plugin can be used for drop parties, and is highly configurable.
 
