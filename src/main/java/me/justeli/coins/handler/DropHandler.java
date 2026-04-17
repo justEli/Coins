@@ -3,6 +3,7 @@ package me.justeli.coins.handler;
 import me.justeli.coins.Coins;
 import me.justeli.coins.config.Config;
 import me.justeli.coins.item.CoinMeta;
+import me.justeli.coins.util.BlockDisplayManager; // -------------------- by AllFiRE
 import me.justeli.coins.util.Permissions;
 import me.justeli.coins.util.Util;
 import org.bukkit.GameMode;
@@ -246,6 +247,7 @@ public final class DropHandler implements Listener {
         return false;
     }
 
+    // -------------------- by AllFiRE
     private void dropCoins(int amount, @Nullable Player player, @NotNull Location location, boolean block) {
         if (location.getWorld() == null) {
             return;
@@ -253,7 +255,8 @@ public final class DropHandler implements Listener {
 
         double increment = 1;
         if (player != null && Config.ENCHANT_INCREMENT > 0) {
-            int lootingLevel = player.getInventory().getItemInMainHand().getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS);
+            Enchantment enchant = block ? Enchantment.FORTUNE : Enchantment.LOOTING;
+            int lootingLevel = player.getInventory().getItemInMainHand().getEnchantmentLevel(enchant);
             if (lootingLevel > 0) {
                 increment += lootingLevel * Config.ENCHANT_INCREMENT;
             }
@@ -268,19 +271,35 @@ public final class DropHandler implements Listener {
             amount *= (int) coins.getSettings().getMultiplier(player);
         }
 
-        for (int i = 0; i < amount; i++) {
-            // works on Folia
-            ItemStack coin = coins.getCreateCoin().createDropped(increment);
-            if (block) {
-                coins.getScheduler().runLocationTaskLater(location, 1, () ->
-                    location.getWorld().dropItemNaturally(location, coin)
-                );
-            }
-            else {
-                location.getWorld().dropItem(location, coin);
-            }
+        String displayType = Config.COIN_DISPLAY_TYPE;
+        if (displayType == null) {
+            displayType = "item";
+        }
+
+        switch (displayType.toLowerCase()) {
+            case "blockdisplay":
+                if (Config.BLOCK_DISPLAY_ENABLED && BlockDisplayManager.isBlockDisplaySupported()) {
+                    double totalAmount = amount * increment;
+                    BlockDisplayManager.createCoinDisplay(location, totalAmount, player);
+                    break;
+                }
+            case "item":
+            default:
+                for (int i = 0; i < amount; i++) {
+                    ItemStack coin = coins.getCreateCoin().createDropped(increment);
+                    if (block) {
+                        coins.getScheduler().runLocationTaskLater(location, 1, () ->
+                            location.getWorld().dropItemNaturally(location, coin)
+                        );
+                    }
+                    else {
+                        location.getWorld().dropItem(location, coin);
+                    }
+                }
+                break;
         }
     }
+    // -------------------- by AllFiRE
 
     @EventHandler(priority = EventPriority.LOW)
     void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
