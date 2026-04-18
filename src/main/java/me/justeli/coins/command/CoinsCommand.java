@@ -34,44 +34,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author Eli
  * @since December 26, 2018 (creation)
  */
-public final class CoinsCommand implements CommandExecutor, TabCompleter package me.justeli.coins.command;
-
-import me.justeli.coins.Coins;
-import me.justeli.coins.config.Config;
-import me.justeli.coins.config.Message;
-import me.justeli.coins.item.CoinMeta;
-import me.justeli.coins.util.Permissions;
-import me.justeli.coins.util.Util;
-import me.justeli.coins.util.PluginVersion;
-import net.md_5.bungee.api.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Item;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.Vector;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.SplittableRandom;
-import java.util.TreeSet;
-import java.util.concurrent.atomic.AtomicInteger;
-
-/**
- * @author Eli
- * @since December 26, 2018 (creation)
- */
 public final class CoinsCommand implements CommandExecutor, TabCompleter {
     private final Coins coins;
+    
     public CoinsCommand(Coins coins) {
         this.coins = coins;
 
@@ -84,7 +49,7 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
         command.setTabCompleter(this);
     }
 
-    private final static SplittableRandom RANDOM = new SplittableRandom();
+    private static final SplittableRandom RANDOM = new SplittableRandom();
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {
@@ -94,7 +59,7 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
         }
 
         switch (args[0].toLowerCase()) {
-            case "reload" -> {
+            case "reload":
                 if (checkPermission(sender, Permissions.hasCommandReload(sender))) {
                     long ms = System.currentTimeMillis();
 
@@ -104,15 +69,14 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
                     sender.sendMessage(Message.RELOAD_SUCCESS.replace(Long.toString(System.currentTimeMillis() - ms)));
                     if (coins.getSettings().getWarningCount() != 0) {
                         sender.sendMessage(Message.MINOR_ISSUES.toString());
-                    }
-                    else {
+                    } else {
                         sender.sendMessage(Message.CHECK_SETTINGS.toString());
                     }
                 }
-            }
-            case "settings" -> {
+                break;
+            case "settings":
                 if (checkPermission(sender, Permissions.hasCommandSettings(sender))) {
-                    int page = args.length > 1? Util.parseInt(args[1]).orElse(1) : 1;
+                    int page = args.length > 1 ? Util.parseInt(args[1]).orElse(1) : 1;
                     TreeSet<String> keys = coins.getSettings().getKeys();
                     int totalPages = keys.size() / 8 + Math.min(keys.size() % 8, 1);
 
@@ -121,25 +85,27 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
                         sender.sendMessage(Util.color(setting));
                     }
                 }
-            }
-            case "drop" -> {
+                break;
+            case "drop":
                 if (checkPermission(sender, Permissions.hasCommandDrop(sender))) {
                     handleDropCoins(sender, args);
                 }
-            }
-            case "remove" -> {
+                break;
+            case "remove":
                 if (checkPermission(sender, Permissions.hasCommandRemove(sender))) {
                     handleRemoveCoins(sender, args);
                 }
-            }
-            case "lang", "language" -> {
+                break;
+            case "lang":
+            case "language":
                 if (checkPermission(sender, Permissions.hasCommandLanguage(sender))) {
                     for (Message message : Message.values()) {
                         sender.sendMessage(message.toString());
                     }
                 }
-            }
-            case "version", "update" -> {
+                break;
+            case "version":
+            case "update":
                 if (checkPermission(sender, Permissions.hasCommandVersion(sender))) {
                     sender.sendMessage(String.format(COINS_TITLE, "Version"));
 
@@ -150,30 +116,30 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
 
                     if (latestVersion.isEmpty()) {
                         sender.sendMessage(Message.LATEST_RETRIEVE_FAIL.toString());
-                    }
-                    else if (latestVersion.get().tag().equals(currentVersion)) {
+                    } else if (latestVersion.get().tag().equals(currentVersion)) {
                         sender.sendMessage(Message.UP_TO_DATE.replace(currentVersion));
-                    }
-                    else {
+                    } else {
                         sender.sendMessage(Message.LATEST_RELEASE.replace(
-                            latestVersion.get().tag(),
-                            Util.DATE_FORMAT.format(new Date(latestVersion.get().time())),
-                            latestVersion.get().name(),
-                            coins.getDescription().getWebsite()
+                                latestVersion.get().tag(),
+                                Util.DATE_FORMAT.format(new Date(latestVersion.get().time())),
+                                latestVersion.get().name(),
+                                coins.getDescription().getWebsite()
                         ));
                     }
                 }
-            }
-            case "toggle" -> {
+                break;
+            case "toggle":
                 if (checkPermission(sender, Permissions.hasCommandToggle(sender))) {
-                    Message message = coins.toggleDisabled()? Message.ENABLED : Message.DISABLED;
+                    Message message = coins.toggleDisabled() ? Message.ENABLED : Message.DISABLED;
                     sender.sendMessage(Message.GLOBALLY_DISABLED_INFORM.replace(message.toString()));
                     if (coins.isDisabled()) {
                         sender.sendMessage(Message.DISABLED_DESCRIPTION.toString());
                     }
                 }
-            }
-            default -> handleSendHelp(sender);
+                break;
+            default:
+                handleSendHelp(sender);
+                break;
         }
 
         return true;
@@ -183,7 +149,6 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
         if (permission) {
             return true;
         }
-
         sender.sendMessage(Message.NO_PERMISSION.toString());
         return false;
     }
@@ -211,8 +176,7 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
             if (Permissions.hasCommandToggle(sender) && "toggle".startsWith(remaining)) {
                 list.add("toggle");
             }
-        }
-        else if (args.length == 2) {
+        } else if (args.length == 2) {
             String remaining = args[1].toLowerCase();
             if (args[0].equalsIgnoreCase("remove") && Permissions.hasCommandRemove(sender)) {
                 if ("all".startsWith(remaining)) {
@@ -236,30 +200,24 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
                     list.add(Integer.toString(i));
                 }
             }
-        }
-        else if (args.length == 3) {
+        } else if (args.length == 3) {
             if (args[0].equalsIgnoreCase("remove") && Permissions.hasCommandRemove(sender)) {
                 list.add("<amount>");
-            }
-            else if (args[0].equalsIgnoreCase("drop") && Permissions.hasCommandDrop(sender)) {
+            } else if (args[0].equalsIgnoreCase("drop") && Permissions.hasCommandDrop(sender)) {
                 list.add("<amount>");
             }
-        }
-        else if (args.length == 4) {
+        } else if (args.length == 4) {
             if (args[0].equalsIgnoreCase("remove") && Permissions.hasCommandRemove(sender)) {
                 list.add("[radius]");
-            }
-            else if (args[0].equalsIgnoreCase("drop") && Permissions.hasCommandDrop(sender)) {
+            } else if (args[0].equalsIgnoreCase("drop") && Permissions.hasCommandDrop(sender)) {
                 list.add("[stackAmount]");
                 list.add("[percentage%]");
             }
-        }
-        else if (args.length == 5) {
+        } else if (args.length == 5) {
             if (args[0].equalsIgnoreCase("drop") && Permissions.hasCommandDrop(sender)) {
                 list.add("[radius]");
             }
         }
-
         return list;
     }
 
@@ -277,16 +235,14 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
-        // Parse stack amount or percentage (optional 4th argument)
         int stackAmount = 1;
         boolean isPercentage = false;
         int radius = amount.get() / 20;
         if (radius < 2) radius = 2;
-        
+
         if (args.length >= 4) {
             String stackArg = args[3];
             if (stackArg.endsWith("%")) {
-                // Percentage mode
                 isPercentage = true;
                 String percentStr = stackArg.substring(0, stackArg.length() - 1);
                 Optional<Integer> percentOpt = Util.parseInt(percentStr);
@@ -301,7 +257,6 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
                     return;
                 }
             } else {
-                // Absolute number mode
                 Optional<Integer> stackOpt = Util.parseInt(stackArg);
                 if (stackOpt.isPresent()) {
                     stackAmount = stackOpt.get();
@@ -310,7 +265,6 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
                         return;
                     }
                 } else {
-                    // Not a number or percentage - treat as radius (old behavior)
                     Optional<Integer> r = Util.parseInt(stackArg);
                     if (r.isPresent()) {
                         radius = r.get();
@@ -319,8 +273,7 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
                 }
             }
         }
-        
-        // Parse radius (optional 5th argument)
+
         if (args.length >= 5) {
             Optional<Integer> r = Util.parseInt(args[4]);
             if (r.isPresent()) {
@@ -337,8 +290,7 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
             if (!args[1].contains(",")) {
                 sender.sendMessage(Message.PLAYER_NOT_FOUND.toString());
                 return;
-            }
-            else {
+            } else {
                 String[] coords = args[1].split(",");
 
                 Optional<Double> x = Util.parseDouble(coords[0]);
@@ -350,8 +302,8 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
                     if (coords.length == 4) {
                         world = coins.getServer().getWorld(coords[3]);
                     }
-                    if (world == null && sender instanceof Player player) {
-                        world = player.getWorld();
+                    if (world == null && sender instanceof Player) {
+                        world = ((Player) sender).getWorld();
                     }
                     if (world == null) {
                         world = coins.getServer().getWorlds().get(0);
@@ -359,14 +311,12 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
 
                     location = new Location(world, x.get(), y.get(), z.get());
                     name = Util.doubleToString(x.get()) + ", " + Util.doubleToString(y.get()) + ", " + Util.doubleToString(z.get());
-                }
-                else {
+                } else {
                     sender.sendMessage(Message.COORDS_NOT_FOUND.toString());
                     return;
                 }
             }
-        }
-        else {
+        } else {
             location = onlinePlayer.get().getLocation();
             name = onlinePlayer.get().getName();
         }
@@ -387,7 +337,7 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
         }
 
         dropCoins(location, radius, amount.get(), stackAmount, isPercentage);
-        
+
         String stackInfo = "";
         if (isPercentage) {
             int numStacks = (int) Math.round(100.0 / stackAmount);
@@ -396,11 +346,11 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
         } else if (stackAmount > 1) {
             stackInfo = " &7(stacked in " + stackAmount + ")";
         }
-        
+
         sender.sendMessage(Message.SPAWNED_COINS.replace(
-            Long.toString(amount.get()),
-            Long.toString(radius),
-            name
+                Long.toString(amount.get()),
+                Long.toString(radius),
+                name
         ) + Util.color(stackInfo));
     }
 
@@ -410,60 +360,57 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
         }
 
         Location dropLocation = location.clone().add(0.0, 0.5, 0.0);
-        
+
         if (isPercentage) {
-            // Percentage mode: divide total into equal stacks based on percentage
-            // 100% / stackAmount = number of equal stacks
             int numStacks = (int) Math.round(100.0 / stackAmount);
             if (numStacks < 1) numStacks = 1;
             if (numStacks > totalAmount) numStacks = totalAmount;
-            
+
             final int baseStackValue = totalAmount / numStacks;
             final int remainder = totalAmount % numStacks;
-            
+
             AtomicInteger stacksDropped = new AtomicInteger(0);
-            
+
             coins.getScheduler().runLocationTaskRepeated(location, numStacks, 1, () -> {
                 int stackIndex = stacksDropped.getAndIncrement();
                 if (stackIndex >= numStacks) return;
-                
+
                 int stackValue = baseStackValue;
                 if (stackIndex < remainder) {
                     stackValue++;
                 }
-                
+
                 ItemStack coin = coins.getCreateCoin().createDropped();
                 coin = coins.meta(coin).setData(CoinMeta.COINS_WORTH, (double) stackValue).build();
-                
+
                 Item item = location.getWorld().dropItem(dropLocation, coin);
                 item.setPickupDelay(30);
                 item.setVelocity(new Vector(
-                    (RANDOM.nextDouble() - 0.5) * radius / 10,
-                    RANDOM.nextDouble() * radius / 5,
-                    (RANDOM.nextDouble() - 0.5) * radius / 10
+                        (RANDOM.nextDouble() - 0.5) * radius / 10,
+                        RANDOM.nextDouble() * radius / 5,
+                        (RANDOM.nextDouble() - 0.5) * radius / 10
                 ));
             });
         } else {
-            // Absolute mode: each stack contains exactly 'stackAmount' coins
             final int numStacks = (int) Math.ceil((double) totalAmount / stackAmount);
-            
+
             AtomicInteger remaining = new AtomicInteger(totalAmount);
-            
+
             coins.getScheduler().runLocationTaskRepeated(location, numStacks, 1, () -> {
                 int currentStack = Math.min(remaining.get(), stackAmount);
                 if (currentStack <= 0) return;
-                
+
                 remaining.addAndGet(-currentStack);
-                
+
                 ItemStack coin = coins.getCreateCoin().createDropped();
                 coin = coins.meta(coin).setData(CoinMeta.COINS_WORTH, (double) currentStack).build();
-                
+
                 Item item = location.getWorld().dropItem(dropLocation, coin);
                 item.setPickupDelay(30);
                 item.setVelocity(new Vector(
-                    (RANDOM.nextDouble() - 0.5) * radius / 10,
-                    RANDOM.nextDouble() * radius / 5,
-                    (RANDOM.nextDouble() - 0.5) * radius / 10
+                        (RANDOM.nextDouble() - 0.5) * radius / 10,
+                        RANDOM.nextDouble() * radius / 5,
+                        (RANDOM.nextDouble() - 0.5) * radius / 10
                 ));
             });
         }
@@ -490,15 +437,15 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
             }
         }
 
-        if (sender instanceof Player player) {
+        if (sender instanceof Player) {
+            Player player = (Player) sender;
             if (radius == 0) {
                 items = player.getWorld().getEntitiesByClass(Item.class);
-            }
-            else {
+            } else {
                 Collection<Item> nearbyItems = new ArrayList<>();
                 for (Entity entity : player.getNearbyEntities(radius, radius, radius)) {
-                    if (entity instanceof Item item) {
-                        nearbyItems.add(item);
+                    if (entity instanceof Item) {
+                        nearbyItems.add((Item) entity);
                     }
                 }
                 items = nearbyItems;
@@ -533,8 +480,7 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
         String notice = "";
         if (coins.isDisabled()) {
             notice = " " + Message.GLOBALLY_DISABLED;
-        }
-        else if (latestVersion.isPresent() && !latestVersion.get().tag().equals(currentVersion) && Permissions.hasCommandVersion(sender)) {
+        } else if (latestVersion.isPresent() && !latestVersion.get().tag().equals(currentVersion) && Permissions.hasCommandVersion(sender)) {
             notice = " " + Message.OUTDATED.replace("/coins update");
         }
 
