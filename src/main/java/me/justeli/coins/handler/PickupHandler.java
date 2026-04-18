@@ -28,6 +28,8 @@ public final class PickupHandler implements Listener {
         coins.parseEventHandlers(this);
     }
 
+    // FIX: thrownCoinCache prevents race condition
+    private final Set<UUID> thrownCoinCache = new HashSet<>();
     private final Map<UUID, Double> pickupAmountCache = new ConcurrentHashMap<>();
     private final Map<UUID, Long> pickupTimeCache = new ConcurrentHashMap<>();
 
@@ -57,13 +59,19 @@ public final class PickupHandler implements Listener {
             return;
         }
 
+        // FIX: Prevent duplicate pickup
+        if (thrownCoinCache.contains(item.getUniqueId())) {
+            return;
+        }
+        thrownCoinCache.add(item.getUniqueId());
+        
         // prevent pickup while coin is thrown up
         item.setPickupDelay(1200);
         item.setOwner(NO_OWNER_UUID); // prevent the item from pickup in the future
 
         // throw the coin upwards
         item.setVelocity(THROW_VECTOR);
-        coins.getScheduler().runEntityTaskLater(item, 5, item::remove);
+        coins.getScheduler().runEntityTaskLater(item, 5, () -> {item.remove();thrownCoinCache.remove(item.getUniqueId());});
 
         // give money for picking up
         double amount = coins.getCoinMeta().getValue(item.getItemStack());
@@ -90,6 +98,10 @@ public final class PickupHandler implements Listener {
         // only canceled when the pickup delay was set (to prevent double pickup)
         Item item = event.getItem();
         if (item.getPickupDelay() == 0 || !coins.getCoinMeta().isCoin(item.getItemStack())) {
+            return;
+        }
+
+        if (!thrownCoinCache.contains(item.getUniqueId())) {
             return;
         }
 
