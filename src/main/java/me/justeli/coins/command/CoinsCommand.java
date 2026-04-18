@@ -393,11 +393,12 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
             });
         } else {
             final int numStacks = (int) Math.ceil((double) totalAmount / stackAmount);
+            final int finalStackAmount = stackAmount;
 
             AtomicInteger remaining = new AtomicInteger(totalAmount);
 
             coins.getScheduler().runLocationTaskRepeated(location, numStacks, 1, () -> {
-                int currentStack = Math.min(remaining.get(), stackAmount);
+                int currentStack = Math.min(remaining.get(), finalStackAmount);
                 if (currentStack <= 0) return;
 
                 remaining.addAndGet(-currentStack);
