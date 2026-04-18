@@ -21,6 +21,9 @@ public class Config {
     public static Map<EntityType, Integer> MOB_MULTIPLIER = new ConcurrentHashMap<>();
     public static DecimalFormat DECIMAL_FORMATTER = new DecimalFormat();
 
+    @ConfigEntry(value = "debug-logging", required = false)
+    public static Boolean DEBUG_LOGGING = false;
+    
     @ConfigEntry("stack-coins")
     public static Boolean STACK_COINS = false;
 
