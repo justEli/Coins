@@ -1,33 +1,37 @@
 ---
 name: Bug report
-about: Create a report to help us improve
+about: Create a report to file bug
 title: ''
-labels: bug
-assignees: ''
+labels: 'class: bug, status: unconfirmed'
+assignees: justEli
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
-
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+**Bug description**
+[Write here]
 
 **Expected behavior**
-A clear and concise description of what you expected to happen.
+[Write here]
+
+**Steps to reproduce**
+1. Go to ...
+2. Click on ...
+3. Scroll down to ...
+4. See error ...
 
 **Screenshots**
-If applicable, add screenshots to help explain your problem.
+[Paste here]
 
 **System**
- - OS: [e.g. macOS]
+- Plugin version: [Write here, i.e. '1.14.1']
+- Minecraft version: [Write here, i.e. '26.1']
+- Server software: [Write here, i.e. 'Paper']
+- Java version: [Write here, i.e. '25']
 
-**Error**
-The error that is shown in console.
+**Console error**
+```
+[Paste here]
+```
 
 **Additional context**
-Add any other context about the problem here.
+[Write here]
