@@ -34,6 +34,42 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author Eli
  * @since December 26, 2018 (creation)
  */
+public final class CoinsCommand implements CommandExecutor, TabCompleter package me.justeli.coins.command;
+
+import me.justeli.coins.Coins;
+import me.justeli.coins.config.Config;
+import me.justeli.coins.config.Message;
+import me.justeli.coins.item.CoinMeta;
+import me.justeli.coins.util.Permissions;
+import me.justeli.coins.util.Util;
+import me.justeli.coins.util.PluginVersion;
+import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.SplittableRandom;
+import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicInteger;
+
+/**
+ * @author Eli
+ * @since December 26, 2018 (creation)
+ */
 public final class CoinsCommand implements CommandExecutor, TabCompleter {
     private final Coins coins;
     public CoinsCommand(Coins coins) {
@@ -382,8 +418,8 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
             if (numStacks < 1) numStacks = 1;
             if (numStacks > totalAmount) numStacks = totalAmount;
             
-            int baseStackValue = totalAmount / numStacks;
-            int remainder = totalAmount % numStacks;
+            final int baseStackValue = totalAmount / numStacks;
+            final int remainder = totalAmount % numStacks;
             
             AtomicInteger stacksDropped = new AtomicInteger(0);
             
@@ -409,7 +445,7 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
             });
         } else {
             // Absolute mode: each stack contains exactly 'stackAmount' coins
-            int numStacks = (int) Math.ceil((double) totalAmount / stackAmount);
+            final int numStacks = (int) Math.ceil((double) totalAmount / stackAmount);
             
             AtomicInteger remaining = new AtomicInteger(totalAmount);
             
