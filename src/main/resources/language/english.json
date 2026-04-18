@@ -22,7 +22,7 @@
   "SETTINGS_USAGE" : "&c/coins settings &7- list the currently loaded settings",
   "RELOAD_USAGE" : "&c/coins reload &7- reload the settings from config.yml",
   "VERSION_CHECK" : "&c/coins version &7- check if there's a new release",
-  "WITHDRAW_USAGE" : "&c/withdraw <worth> [amount] &7- withdraw money into coins",
+  "WITHDRAW_USAGE" : "&c/withdraw <value> [amount] &7- withdraw money into coins",
   "TOGGLE_USAGE" :  "&c/coins toggle &7- disable or enable Coins globally",
 
   "DISABLED_REASONS" :  "&4Coins is disabled for the following reason(s):",
