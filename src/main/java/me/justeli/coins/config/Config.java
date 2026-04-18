@@ -296,4 +296,11 @@ public class Config {
 
     @ConfigEntry(value = "click-pickup-button", required = false)
     public static String CLICK_PICKUP_BUTTON = "RIGHT";
+    
+    // Coin Stacking Settings (radius-based)
+    @ConfigEntry(value = "coin-stacking-enabled", required = false)
+    public static Boolean COIN_STACKING_ENABLED = false;
+
+    @ConfigEntry(value = "coin-stacking-radius", required = false)
+   public static Double COIN_STACKING_RADIUS = 10.0;
 }
