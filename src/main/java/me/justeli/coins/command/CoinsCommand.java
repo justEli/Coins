@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.SplittableRandom;
 import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Eli
@@ -213,6 +214,12 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
                 list.add("[radius]");
             }
             else if (args[0].equalsIgnoreCase("drop") && Permissions.hasCommandDrop(sender)) {
+                list.add("[stackAmount]");
+                list.add("[percentage%]");
+            }
+        }
+        else if (args.length == 5) {
+            if (args[0].equalsIgnoreCase("drop") && Permissions.hasCommandDrop(sender)) {
                 list.add("[radius]");
             }
         }
@@ -220,6 +227,7 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
         return list;
     }
 
+    // --------------------------------------------------------------------------------------- by AllFiRE
     private void handleDropCoins(CommandSender sender, String[] args) {
         if (args.length < 3) {
             sender.sendMessage(Message.DROP_USAGE.toString());
@@ -233,19 +241,58 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
+        // Parse stack amount or percentage (optional 4th argument)
+        int stackAmount = 1;
+        boolean isPercentage = false;
         int radius = amount.get() / 20;
-        if (radius < 2) {
-            radius = 2;
-        }
-
+        if (radius < 2) radius = 2;
+        
         if (args.length >= 4) {
-            Optional<Integer> inputRadius = Util.parseInt(args[3]);
-            if (inputRadius.isEmpty()) {
-                sender.sendMessage(Message.INVALID_NUMBER.toString());
+            String stackArg = args[3];
+            if (stackArg.endsWith("%")) {
+                // Percentage mode
+                isPercentage = true;
+                String percentStr = stackArg.substring(0, stackArg.length() - 1);
+                Optional<Integer> percentOpt = Util.parseInt(percentStr);
+                if (percentOpt.isPresent()) {
+                    stackAmount = percentOpt.get();
+                    if (stackAmount <= 0 || stackAmount > 100) {
+                        sender.sendMessage(Util.color("&cPercentage must be between 1% and 100%"));
+                        return;
+                    }
+                } else {
+                    sender.sendMessage(Message.INVALID_NUMBER.toString());
+                    return;
+                }
+            } else {
+                // Absolute number mode
+                Optional<Integer> stackOpt = Util.parseInt(stackArg);
+                if (stackOpt.isPresent()) {
+                    stackAmount = stackOpt.get();
+                    if (stackAmount < 1 || stackAmount > 1000) {
+                        sender.sendMessage(Util.color("&cStack amount must be between 1 and 1000"));
+                        return;
+                    }
+                } else {
+                    // Not a number or percentage - treat as radius (old behavior)
+                    Optional<Integer> r = Util.parseInt(stackArg);
+                    if (r.isPresent()) {
+                        radius = r.get();
+                        stackAmount = 1;
+                    }
+                }
+            }
+        }
+        
+        // Parse radius (optional 5th argument)
+        if (args.length >= 5) {
+            Optional<Integer> r = Util.parseInt(args[4]);
+            if (r.isPresent()) {
+                radius = r.get();
+            } else {
+                sender.sendMessage(Message.INVALID_RADIUS.toString());
                 return;
             }
-
-            radius = inputRadius.get();
         }
 
         Location location;
@@ -298,18 +345,94 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
-        if (amount.get() < 1 || amount.get() > 1000) {
+        if (amount.get() < 1 || amount.get() > 10000) {
             sender.sendMessage(Message.INVALID_AMOUNT.toString());
             return;
         }
 
-        dropCoins(location, radius, amount.get());
+        dropCoins(location, radius, amount.get(), stackAmount, isPercentage);
+        
+        String stackInfo = "";
+        if (isPercentage) {
+            int numStacks = (int) Math.round(100.0 / stackAmount);
+            if (numStacks < 1) numStacks = 1;
+            stackInfo = " &7(" + numStacks + " stacks of " + stackAmount + "% each)";
+        } else if (stackAmount > 1) {
+            stackInfo = " &7(stacked in " + stackAmount + ")";
+        }
+        
         sender.sendMessage(Message.SPAWNED_COINS.replace(
             Long.toString(amount.get()),
             Long.toString(radius),
             name
-        ));
+        ) + Util.color(stackInfo));
     }
+
+    private void dropCoins(Location location, int radius, int totalAmount, int stackAmount, boolean isPercentage) {
+        if (location.getWorld() == null) {
+            return;
+        }
+
+        Location dropLocation = location.clone().add(0.0, 0.5, 0.0);
+        
+        if (isPercentage) {
+            // Percentage mode: divide total into equal stacks based on percentage
+            // 100% / stackAmount = number of equal stacks
+            int numStacks = (int) Math.round(100.0 / stackAmount);
+            if (numStacks < 1) numStacks = 1;
+            if (numStacks > totalAmount) numStacks = totalAmount;
+            
+            int baseStackValue = totalAmount / numStacks;
+            int remainder = totalAmount % numStacks;
+            
+            AtomicInteger stacksDropped = new AtomicInteger(0);
+            
+            coins.getScheduler().runLocationTaskRepeated(location, numStacks, 1, () -> {
+                int stackIndex = stacksDropped.getAndIncrement();
+                if (stackIndex >= numStacks) return;
+                
+                int stackValue = baseStackValue;
+                if (stackIndex < remainder) {
+                    stackValue++;
+                }
+                
+                ItemStack coin = coins.getCreateCoin().createDropped();
+                coin = coins.meta(coin).setData(CoinMeta.COINS_WORTH, (double) stackValue).build();
+                
+                Item item = location.getWorld().dropItem(dropLocation, coin);
+                item.setPickupDelay(30);
+                item.setVelocity(new Vector(
+                    (RANDOM.nextDouble() - 0.5) * radius / 10,
+                    RANDOM.nextDouble() * radius / 5,
+                    (RANDOM.nextDouble() - 0.5) * radius / 10
+                ));
+            });
+        } else {
+            // Absolute mode: each stack contains exactly 'stackAmount' coins
+            int numStacks = (int) Math.ceil((double) totalAmount / stackAmount);
+            
+            AtomicInteger remaining = new AtomicInteger(totalAmount);
+            
+            coins.getScheduler().runLocationTaskRepeated(location, numStacks, 1, () -> {
+                int currentStack = Math.min(remaining.get(), stackAmount);
+                if (currentStack <= 0) return;
+                
+                remaining.addAndGet(-currentStack);
+                
+                ItemStack coin = coins.getCreateCoin().createDropped();
+                coin = coins.meta(coin).setData(CoinMeta.COINS_WORTH, (double) currentStack).build();
+                
+                Item item = location.getWorld().dropItem(dropLocation, coin);
+                item.setPickupDelay(30);
+                item.setVelocity(new Vector(
+                    (RANDOM.nextDouble() - 0.5) * radius / 10,
+                    RANDOM.nextDouble() * radius / 5,
+                    (RANDOM.nextDouble() - 0.5) * radius / 10
+                ));
+            });
+        }
+    }
+    // --------------------------------------------------------------------------------------- by AllFiRE
 
     private void handleRemoveCoins(CommandSender sender, String[] args) {
         Collection<Item> items = coins.getServer().getWorlds().get(0).getEntitiesByClass(Item.class);
@@ -355,7 +478,6 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
             float random = RANDOM.nextFloat() * 3F;
             item.setVelocity(new Vector(0, random, 0));
 
-            // works on Folia
             coins.getScheduler().runEntityTaskLater(item, (long) (random * 5F), item::remove);
 
             amount++;
@@ -415,28 +537,5 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage(ChatColor.GOLD + coins.getDescription().getDescription());
             sender.sendMessage(ChatColor.YELLOW + "More info: " + ChatColor.BLUE + coins.getDescription().getWebsite());
         }
-    }
-
-    private void dropCoins(Location location, int radius, int amount) {
-        if (location.getWorld() == null) {
-            return;
-        }
-
-        Location dropLocation = location.add(0.0, 0.5, 0.0);
-        ItemStack coin = coins.getCreateCoin().createDropped();
-
-        coins.getScheduler().runLocationTaskRepeated(location, amount, 1, () -> {
-            Item item = location.getWorld().dropItem(
-                dropLocation,
-                coins.meta(coin).setData(CoinMeta.COINS_RANDOM, RANDOM.nextDouble()).build()
-            );
-
-            item.setPickupDelay(30);
-            item.setVelocity(new Vector(
-                (RANDOM.nextDouble() - 0.5) * radius / 10,
-                RANDOM.nextDouble() * radius / 5,
-                (RANDOM.nextDouble() - 0.5) * radius / 10
-            ));
-        });
     }
 }
