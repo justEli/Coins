@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.SplittableRandom;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 
 /**
  * @author Eli
@@ -191,21 +192,28 @@ public final class DropHandler implements Listener {
         }
 
         Location location = dead.getLocation().getBlock().getLocation();
-        long previousTime = locationLastTimeCache.computeIfAbsent(location, empty -> 0L);
+        long currentTime = System.currentTimeMillis();
+        long timeLimit = (long) (3600000 * Config.LOCATION_LIMIT_HOURS);
 
-        // todo improve
-        if (previousTime > System.currentTimeMillis() - 3600000 * Config.LOCATION_LIMIT_HOURS) {
-            // within the past hour
-            int killAmount = locationAmountCache.computeIfAbsent(location, empty -> 0);
+        // Clean up old entries periodically to prevent memory leaks
+        if (this.locationLastTimeCache.size() > 1000) {
+            this.locationLastTimeCache.entrySet().removeIf(entry -> 
+                currentTime - entry.getValue() > timeLimit);
+            this.locationAmountCache.entrySet().removeIf(entry -> 
+                !this.locationLastTimeCache.containsKey(entry.getKey()));
+        }
 
-            locationAmountCache.put(location, killAmount + 1);
-            locationLastTimeCache.put(location, System.currentTimeMillis());
+        long previousTime = this.locationLastTimeCache.computeIfAbsent(location, empty -> 0L);
 
+        if (previousTime > currentTime - timeLimit) {
+            int killAmount = this.locationAmountCache.computeIfAbsent(location, empty -> 0);
+            this.locationAmountCache.put(location, killAmount + 1);
+            this.locationLastTimeCache.put(location, currentTime);
             return killAmount < Config.LIMIT_FOR_LOCATION;
         }
 
-        locationAmountCache.put(location, 1);
-        locationLastTimeCache.put(location, System.currentTimeMillis());
+        this.locationAmountCache.put(location, 1);
+        this.locationLastTimeCache.put(location, currentTime);
         return true;
     }
 
@@ -305,5 +313,18 @@ public final class DropHandler implements Listener {
     @EventHandler
     void onPlayerJoinEvent(PlayerJoinEvent event) {
         coins.getSettings().resetMultiplier(event.getPlayer());
+    }
+
+    public void clearLocationCache() {
+        int oldSize = this.locationAmountCache.size();
+        this.locationAmountCache.clear();
+        this.locationLastTimeCache.clear();
+        if (Config.DEBUG_LOGGING) {
+            coins.console(Level.INFO, "[Coins] Location cache cleared - removed " + oldSize + " entries");
+        }
+    }
+
+    public int getLocationCacheSize() {
+        return this.locationAmountCache.size();
     }
 }
