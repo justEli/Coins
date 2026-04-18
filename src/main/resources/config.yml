@@ -271,6 +271,12 @@ money-taken:
   from: 10.00
   to: 30.00
 
+# Coin Stacking Settings
+# When enabled, dropped coins will automatically stack with nearby coins within the configured radius
+coin-stacking-enabled: false
+# Radius in blocks to search for nearby coins to stack together
+coin-stacking-radius: 10.0
+
 # Should the plugin take the *amount* of money from them, or the *percentage* of their
 #  money? An amount (take-percentage: false) of 10 to 30 would be $10 to $30. A percentage
 #  (take-percentage: true) of 10 to 30 would be 10% to 30%.
