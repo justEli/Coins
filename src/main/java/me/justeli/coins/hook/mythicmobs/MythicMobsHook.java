@@ -21,7 +21,7 @@ public final class MythicMobsHook implements MMHook {
         coins.parseEventHandlers(this);
     }
 
-    private final static BukkitAPIHelper BUKKIT_API_HELPER = new BukkitAPIHelper();
+    private static final BukkitAPIHelper BUKKIT_API_HELPER = new BukkitAPIHelper();
 
     @Override
     public boolean isMythicMob(Entity entity) {

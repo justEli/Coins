@@ -46,9 +46,6 @@ public final class DropHandler implements Listener {
         coins.parseEventHandlers(this);
     }
 
-    private final Map<Location, Integer> locationAmountCache = new ConcurrentHashMap<>();
-    private final Map<Location, Long> locationLastTimeCache = new ConcurrentHashMap<>();
-
     private static final SplittableRandom RANDOM = new SplittableRandom();
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -185,6 +182,9 @@ public final class DropHandler implements Listener {
         dropCoins(multiplier, attacker, dead.getLocation(), false);
     }
 
+    private final Map<Location, Integer> locationAmountCache = new ConcurrentHashMap<>();
+    private final Map<Location, Long> locationLastTimeCache = new ConcurrentHashMap<>();
+
     private boolean isLocationAvailableAndSet(Entity dead) {
         if (Config.LIMIT_FOR_LOCATION < 1) {
             return true;
@@ -253,7 +253,9 @@ public final class DropHandler implements Listener {
 
         double increment = 1;
         if (player != null && Config.ENCHANT_INCREMENT > 0) {
-            int lootingLevel = player.getInventory().getItemInMainHand().getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS);
+            Enchantment enchant = block? Enchantment.LOOT_BONUS_BLOCKS : Enchantment.LOOT_BONUS_MOBS;
+
+            int lootingLevel = player.getInventory().getItemInMainHand().getEnchantmentLevel(enchant);
             if (lootingLevel > 0) {
                 increment += lootingLevel * Config.ENCHANT_INCREMENT;
             }

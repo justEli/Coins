@@ -47,7 +47,7 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
         command.setTabCompleter(this);
     }
 
-    private final static SplittableRandom RANDOM = new SplittableRandom();
+    private static final SplittableRandom RANDOM = new SplittableRandom();
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, @NotNull String[] args) {

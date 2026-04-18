@@ -31,20 +31,8 @@ public final class PickupHandler implements Listener {
     private final Map<UUID, Double> pickupAmountCache = new ConcurrentHashMap<>();
     private final Map<UUID, Long> pickupTimeCache = new ConcurrentHashMap<>();
 
-    @EventHandler
-    void onEntityPickupItemEvent(EntityPickupItemEvent event) {
-        // handled properly with PickupEvent
-        if (event.getEntity() instanceof Player) {
-            return;
-        }
-
-        // don't let mobs pick up coins that are already being given to players
-        if (event.getItem().getPickupDelay() > 0) {
-            return;
-        }
-
-        event.setCancelled(true);
-    }
+    private static final Vector THROW_VECTOR = new Vector(0, .4, 0);
+    private static final UUID NO_OWNER_UUID = UUID.fromString("00000001-0001-0001-0001-0000000000AD");
 
     @EventHandler(ignoreCancelled = true)
     void onPickupEvent(PickupEvent event) {
@@ -64,15 +52,20 @@ public final class PickupHandler implements Listener {
             return;
         }
 
+        // don't let players pick up coins that are already being picked up
         if (item.getPickupDelay() > 0) {
             return;
         }
 
-        item.setVelocity(new Vector(0, .4, 0));
-        item.setPickupDelay(1200); // to prevent pickup while coin is thrown up
+        // prevent pickup while coin is thrown up
+        item.setPickupDelay(1200);
+        item.setOwner(NO_OWNER_UUID); // prevent the item from pickup in the future
 
+        // throw the coin upwards
+        item.setVelocity(THROW_VECTOR);
         coins.getScheduler().runEntityTaskLater(item, 5, item::remove);
 
+        // give money for picking up
         double amount = coins.getCoinMeta().getValue(item.getItemStack());
         if (amount == 0) {
             depositRandomMoney(item.getItemStack(), player);
@@ -84,6 +77,23 @@ public final class PickupHandler implements Listener {
         if (Config.PICKUP_SOUND) {
             Util.playCoinPickupSound(player);
         }
+    }
+
+    @EventHandler
+    void onEntityPickupItemEvent(EntityPickupItemEvent event) {
+        // prevention to pick up is already handled properly at PickupEvent
+        if (event.getEntity() instanceof Player) {
+            return;
+        }
+
+        // don't let mobs pick up coins that are already being picked up by players
+        // only canceled when the pickup delay was set (to prevent double pickup)
+        Item item = event.getItem();
+        if (item.getPickupDelay() == 0 || !coins.getCoinMeta().isCoin(item.getItemStack())) {
+            return;
+        }
+
+        event.setCancelled(true);
     }
 
     public void depositRandomMoney(ItemStack item, Player player) {
