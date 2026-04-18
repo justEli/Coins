@@ -260,8 +260,8 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
                 Optional<Integer> stackOpt = Util.parseInt(stackArg);
                 if (stackOpt.isPresent()) {
                     stackAmount = stackOpt.get();
-                    if (stackAmount < 1 || stackAmount > 1000) {
-                        sender.sendMessage(Util.color("&cStack amount must be between 1 and 1000"));
+                    if (stackAmount < 1) {
+                        sender.sendMessage(Util.color("&cStack amount must be between 1 and ∞"));
                         return;
                     }
                 } else {
@@ -326,12 +326,12 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
-        if (radius < 1 || radius > 80) {
+        if (radius < 1) {
             sender.sendMessage(Message.INVALID_RADIUS.toString());
             return;
         }
 
-        if (amount.get() < 1 || amount.get() > 10000) {
+        if (amount.get() < 1) {
             sender.sendMessage(Message.INVALID_AMOUNT.toString());
             return;
         }
@@ -437,7 +437,7 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
                 }
 
                 radius = inputRadius.get();
-                if (radius < 1 || radius > 80) {
+                if (radius < 1) {
                     sender.sendMessage(Message.INVALID_RADIUS.toString());
                     return;
                 }
