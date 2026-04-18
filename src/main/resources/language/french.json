@@ -17,7 +17,7 @@
   "INVALID_NUMBER" : "&cNombre invalide.",
   "INVALID_RADIUS" : "&cRayon invalide.",
 
-  "DROP_USAGE" : "&c/coins drop <joueur|x,y,z[,monde]> <montant> [rayon]",
+  "DROP_USAGE" : "&c/coins drop <joueur|x,y,z[,monde]> <montant> [rayon] [worth]",
   "REMOVE_USAGE" : "&c/coins remove [rayon|all] &7- retire des coins dans un rayon",
   "SETTINGS_USAGE" : "&c/coins settings &7- liste la configuration actuellement chargée",
   "RELOAD_USAGE" : "&c/coins reload &7- recharge la configuration de config.yml",

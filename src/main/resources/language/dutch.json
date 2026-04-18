@@ -17,7 +17,7 @@
   "INVALID_NUMBER" : "&cDat is een ongeldig getal.",
   "INVALID_RADIUS" : "&cDat is een ongeldige radius.",
 
-  "DROP_USAGE" : "&c/coins drop <speler|x,y,z[,wereld]> <aantal> [radius]",
+  "DROP_USAGE" : "&c/coins drop <speler|x,y,z[,wereld]> <aantal> [radius] [waarde]",
   "REMOVE_USAGE" : "&c/coins remove [radius|all] &7- verwijder munten in een radius",
   "SETTINGS_USAGE" : "&c/coins settings &7- geef actuele instellingen weer",
   "RELOAD_USAGE" : "&c/coins reload &7- herlaad instellingen van de config.yml",

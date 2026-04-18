@@ -17,7 +17,7 @@
   "INVALID_NUMBER" : "&cDiese Nummer ist ungültig.",
   "INVALID_RADIUS" : "&cDieser Radius ist ungültig.",
 
-  "DROP_USAGE" : "&c/coins drop <spieler|x,y,z[,welt]> <betrag> [radius]",
+  "DROP_USAGE" : "&c/coins drop <spieler|x,y,z[,welt]> <betrag> [radius] [worth]",
   "REMOVE_USAGE" : "&c/coins remove [radius|all] &7- Löscht Coins in einem Radius",
   "SETTINGS_USAGE" : "&c/coins settings &7- Liste der aktuell geladenen Einstellungen",
   "RELOAD_USAGE" : "&c/coins reload &7- Lade die Einstellungen von config.yml neu",

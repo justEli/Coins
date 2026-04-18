@@ -17,7 +17,7 @@
   "INVALID_NUMBER" : "&cQuesto è un numero non valido.",
   "INVALID_RADIUS" : "&cQuesto è un raggio non valido.",
 
-  "DROP_USAGE" : "&c/coins drop <player|x,y,z[,Mondo]> <amount> [Raggio]",
+  "DROP_USAGE" : "&c/coins drop <player|x,y,z[,Mondo]> <amount> [Raggio] [worth]",
   "REMOVE_USAGE" : "&c/coins remove [radius/all] &7- Rimuove coins nel raggio",
   "SETTINGS_USAGE" : "&c/coins settings &7- Elenca le impostazioni attualmenti",
   "RELOAD_USAGE" : "&c/coins reload &7- Ricarica la config.yml",

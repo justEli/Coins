@@ -17,7 +17,7 @@
   "INVALID_NUMBER" : "&cNúmero inválido.",
   "INVALID_RADIUS" : "&cRadio inválido.",
 
-  "DROP_USAGE" : "&c/coins drop <jugador|x,y,z[,mundo]> <cantidad> [radio]",
+  "DROP_USAGE" : "&c/coins drop <jugador|x,y,z[,mundo]> <cantidad> [radio] [worth]",
   "REMOVE_USAGE" : "&c/coins remove [radio|all] &7- remueve monedas en un radio",
   "SETTINGS_USAGE" : "&c/coins settings &7- lista las opciones actualmente cargadas",
   "RELOAD_USAGE" : "&c/coins reload &7- recarga las opciones de el config.yml",

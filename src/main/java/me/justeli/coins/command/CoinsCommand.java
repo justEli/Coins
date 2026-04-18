@@ -216,6 +216,11 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
                 list.add("[radius]");
             }
         }
+        else if (args.length == 5) {
+            if (args[0].equalsIgnoreCase("drop") && Permissions.hasCommandDrop(sender)) {
+                list.add("[worth]");
+            }
+        }
 
         return list;
     }
@@ -246,6 +251,17 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
             }
 
             radius = inputRadius.get();
+        }
+
+        double worth = 0;
+        if (args.length >= 5) {
+            Optional<Double> inputWorth = Util.parseDouble(args[4]);
+            if (inputWorth.isEmpty() || inputWorth.get() < 0) {
+                sender.sendMessage(Message.INVALID_NUMBER.toString());
+                return;
+            }
+
+            worth = inputWorth.get();
         }
 
         Location location;
@@ -303,7 +319,7 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
-        dropCoins(location, radius, amount.get());
+        dropCoins(location, radius, amount.get(), worth);
         sender.sendMessage(Message.SPAWNED_COINS.replace(
             Long.toString(amount.get()),
             Long.toString(radius),
@@ -417,13 +433,20 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
         }
     }
 
-    private void dropCoins(Location location, int radius, int amount) {
+    private void dropCoins(Location location, int radius, int amount, double worth) {
         if (location.getWorld() == null) {
             return;
         }
 
         Location dropLocation = location.add(0.0, 0.5, 0.0);
-        ItemStack coin = coins.getCreateCoin().createDropped();
+
+        ItemStack coin;
+        if (worth == 0) {
+            coin = coins.getCreateCoin().createDropped();
+        }
+        else {
+            coin = coins.getCreateCoin().createOther().setData(CoinMeta.COINS_WORTH, worth).build();
+        }
 
         coins.getScheduler().runLocationTaskRepeated(location, amount, 1, () -> {
             Item item = location.getWorld().dropItem(

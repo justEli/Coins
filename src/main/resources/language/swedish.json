@@ -17,7 +17,7 @@
   "INVALID_NUMBER" : "&cDet är en ogiltig antal.",
   "INVALID_RADIUS" : "&cDet är en ogiltig radie.",
 
-  "DROP_USAGE" : "&c/coins drop <spelare|x,y,z[,värld]> <antal> [radie]",
+  "DROP_USAGE" : "&c/coins drop <spelare|x,y,z[,värld]> <antal> [radie] [worth]",
   "REMOVE_USAGE" : "&c/coins remove [radie|all] &7- ta bort mynt i en radie",
   "SETTINGS_USAGE" : "&c/coins settings &7- lista laddade inställningar",
   "RELOAD_USAGE" : "&c/coins reload &7- ladda om inställningar från config.yml",

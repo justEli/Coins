@@ -17,7 +17,7 @@
   "INVALID_NUMBER" : "&c无效的数字",
   "INVALID_RADIUS" : "&c无效的半径",
 
-  "DROP_USAGE" : "&c/coins drop <player|x,y,z[,world]> <amount> [radius]",
+  "DROP_USAGE" : "&c/coins drop <player|x,y,z[,world]> <amount> [radius] [worth]",
   "REMOVE_USAGE" : "&c/coins remove [radius|all] &7- 在一定半径内移除游戏币",
   "SETTINGS_USAGE" : "&c/coins settings &7- 列出当前的插件配置",
   "RELOAD_USAGE" : "&c/coins reload &7- 重载config.yml文件的配置",

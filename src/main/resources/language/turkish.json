@@ -17,7 +17,7 @@
     "INVALID_NUMBER" : "&cBu geçersiz bir sayı.",
     "INVALID_RADIUS" : "&cBu geçersiz bir çevre.",
 
-    "DROP_USAGE" : "&c/coins drop <oyuncu|x,y,z[,dünya]> <tutar> [çevre]",
+    "DROP_USAGE" : "&c/coins drop <oyuncu|x,y,z[,dünya]> <tutar> [çevre] [worth]",
     "REMOVE_USAGE" : "&c/coins remove [radius|all] &7- Tamamını yada komuda girdiğiniz çevredeki yere düşmüş olan paraları siler",
     "SETTINGS_USAGE" : "&c/coins settings &7- Yüklenilmiş ayarları gösterir",
     "RELOAD_USAGE" : "&c/coins reload &7- Config.yml yi yeniden başlatır ve dğiştirdiğiniz kodları düzeltir",
