@@ -354,65 +354,71 @@ public final class CoinsCommand implements CommandExecutor, TabCompleter {
         ) + Util.color(stackInfo));
     }
 
-    private void dropCoins(Location location, int radius, int totalAmount, int stackAmount, boolean isPercentage) {
+    private void dropCoins(final Location location, final int radius, final int totalAmount, final int stackAmount, final boolean isPercentage) {
         if (location.getWorld() == null) {
             return;
         }
 
-        Location dropLocation = location.clone().add(0.0, 0.5, 0.0);
+        final Location dropLocation = location.clone().add(0.0, 0.5, 0.0);
 
         if (isPercentage) {
-            int numStacks = (int) Math.round(100.0 / stackAmount);
-            if (numStacks < 1) numStacks = 1;
-            if (numStacks > totalAmount) numStacks = totalAmount;
-
+            int numStacksCalc = (int) Math.round(100.0 / stackAmount);
+            if (numStacksCalc < 1) numStacksCalc = 1;
+            if (numStacksCalc > totalAmount) numStacksCalc = totalAmount;
+            
+            final int numStacks = numStacksCalc;
             final int baseStackValue = totalAmount / numStacks;
             final int remainder = totalAmount % numStacks;
 
-            AtomicInteger stacksDropped = new AtomicInteger(0);
+            final AtomicInteger stacksDropped = new AtomicInteger(0);
 
-            coins.getScheduler().runLocationTaskRepeated(location, numStacks, 1, () -> {
-                int stackIndex = stacksDropped.getAndIncrement();
-                if (stackIndex >= numStacks) return;
+            coins.getScheduler().runLocationTaskRepeated(location, numStacks, 1, new Runnable() {
+                @Override
+                public void run() {
+                    int stackIndex = stacksDropped.getAndIncrement();
+                    if (stackIndex >= numStacks) return;
 
-                int stackValue = baseStackValue;
-                if (stackIndex < remainder) {
-                    stackValue++;
+                    int stackValue = baseStackValue;
+                    if (stackIndex < remainder) {
+                        stackValue++;
+                    }
+
+                    ItemStack coin = coins.getCreateCoin().createDropped();
+                    coin = coins.meta(coin).setData(CoinMeta.COINS_WORTH, (double) stackValue).build();
+
+                    Item item = location.getWorld().dropItem(dropLocation, coin);
+                    item.setPickupDelay(30);
+                    item.setVelocity(new Vector(
+                            (RANDOM.nextDouble() - 0.5) * radius / 10,
+                            RANDOM.nextDouble() * radius / 5,
+                            (RANDOM.nextDouble() - 0.5) * radius / 10
+                    ));
                 }
-
-                ItemStack coin = coins.getCreateCoin().createDropped();
-                coin = coins.meta(coin).setData(CoinMeta.COINS_WORTH, (double) stackValue).build();
-
-                Item item = location.getWorld().dropItem(dropLocation, coin);
-                item.setPickupDelay(30);
-                item.setVelocity(new Vector(
-                        (RANDOM.nextDouble() - 0.5) * radius / 10,
-                        RANDOM.nextDouble() * radius / 5,
-                        (RANDOM.nextDouble() - 0.5) * radius / 10
-                ));
             });
         } else {
             final int numStacks = (int) Math.ceil((double) totalAmount / stackAmount);
-            final int finalStackAmount = stackAmount;
 
-            AtomicInteger remaining = new AtomicInteger(totalAmount);
+            final AtomicInteger remaining = new AtomicInteger(totalAmount);
 
-            coins.getScheduler().runLocationTaskRepeated(location, numStacks, 1, () -> {
-                int currentStack = Math.min(remaining.get(), finalStackAmount);
-                if (currentStack <= 0) return;
+            coins.getScheduler().runLocationTaskRepeated(location, numStacks, 1, new Runnable() {
+                @Override
+                public void run() {
+                    int currentStack = Math.min(remaining.get(), stackAmount);
+                    if (currentStack <= 0) return;
 
-                remaining.addAndGet(-currentStack);
+                    remaining.addAndGet(-currentStack);
 
-                ItemStack coin = coins.getCreateCoin().createDropped();
-                coin = coins.meta(coin).setData(CoinMeta.COINS_WORTH, (double) currentStack).build();
+                    ItemStack coin = coins.getCreateCoin().createDropped();
+                    coin = coins.meta(coin).setData(CoinMeta.COINS_WORTH, (double) currentStack).build();
 
-                Item item = location.getWorld().dropItem(dropLocation, coin);
-                item.setPickupDelay(30);
-                item.setVelocity(new Vector(
-                        (RANDOM.nextDouble() - 0.5) * radius / 10,
-                        RANDOM.nextDouble() * radius / 5,
-                        (RANDOM.nextDouble() - 0.5) * radius / 10
-                ));
+                    Item item = location.getWorld().dropItem(dropLocation, coin);
+                    item.setPickupDelay(30);
+                    item.setVelocity(new Vector(
+                            (RANDOM.nextDouble() - 0.5) * radius / 10,
+                            RANDOM.nextDouble() * radius / 5,
+                            (RANDOM.nextDouble() - 0.5) * radius / 10
+                    ));
+                }
             });
         }
     }
