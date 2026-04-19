@@ -63,6 +63,7 @@ coin-item: 'sunflower'
 #  "eyJ0ZXh0dXJl[...]". In case you need the UUID of the skull, it is always:
 #  00000001-0001-0001-0001-000000000002.
 # Example skull: https://minecraft-heads.com/custom-heads/decoration/3005-money-bag
+# Wiki: https://github.com/justEli/Coins/wiki/Player-head-coin-texture
 skull-texture: ''
 
 # Whether to give the coin an enchanted effect. Does not work for skulls.
@@ -71,6 +72,7 @@ enchanted-coin: false
 # This value sets the custom model data value for the coin. This can be used for custom
 #  textures. Default: 0 (disables the feature) You are probably only interested if you use
 #  a custom texture pack.
+# Wiki: https://github.com/justEli/Coins/wiki/Custom-model-data-coin-texture
 custom-model-data: 0
 
 #  #  #  #  #  #  #
