@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
@@ -127,5 +128,12 @@ public final class PickupHandler implements Listener {
 
             pickupTimeCache.put(uuid, System.currentTimeMillis());
         });
+    }
+
+    @EventHandler
+    void onPlayerQuitEvent(PlayerQuitEvent event) {
+        var uuid = event.getPlayer().getUniqueId();
+        pickupAmountCache.remove(uuid);
+        pickupTimeCache.remove(uuid);
     }
 }

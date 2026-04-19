@@ -3,6 +3,8 @@ package me.justeli.coins.handler;
 import me.justeli.coins.Coins;
 import me.justeli.coins.config.Config;
 import me.justeli.coins.item.CoinMeta;
+import me.justeli.coins.util.BlockCache;
+import me.justeli.coins.util.BlockPosition;
 import me.justeli.coins.util.Permissions;
 import me.justeli.coins.util.Util;
 import org.bukkit.GameMode;
@@ -21,7 +23,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
@@ -31,6 +33,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.SplittableRandom;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Eli
@@ -44,9 +49,18 @@ public final class DropHandler implements Listener {
         this.coins = coins;
         this.playerDamageKey = new NamespacedKey(coins, "coins-player-damage");
         coins.parseEventHandlers(this);
+
+        // clean up unused cache
+        SCHEDULED_THREAD.scheduleAtFixedRate(() -> {
+            locationLimitCache.entrySet().removeIf(entry -> !entry.getValue().isWithinConfiguredTime());
+        }, 10, 10, TimeUnit.MINUTES);
     }
 
     private static final SplittableRandom RANDOM = new SplittableRandom();
+    private static final ScheduledExecutorService SCHEDULED_THREAD =
+        Executors.newSingleThreadScheduledExecutor();
+
+    private final Map<BlockPosition, BlockCache> locationLimitCache = new ConcurrentHashMap<>();
 
     @EventHandler(priority = EventPriority.HIGH)
     void onEntityDeathEvent(EntityDeathEvent event) {
@@ -182,30 +196,19 @@ public final class DropHandler implements Listener {
         dropCoins(multiplier, attacker, dead.getLocation(), false);
     }
 
-    private final Map<Location, Integer> locationAmountCache = new ConcurrentHashMap<>();
-    private final Map<Location, Long> locationLastTimeCache = new ConcurrentHashMap<>();
-
     private boolean isLocationAvailableAndSet(Entity dead) {
         if (Config.LIMIT_FOR_LOCATION < 1) {
             return true;
         }
 
-        Location location = dead.getLocation().getBlock().getLocation();
-        long previousTime = locationLastTimeCache.computeIfAbsent(location, empty -> 0L);
+        BlockPosition position = new BlockPosition(dead.getLocation());
+        BlockCache cache = locationLimitCache.computeIfAbsent(position, empty -> new BlockCache());
 
-        // todo improve
-        if (previousTime > System.currentTimeMillis() - 3600000 * Config.LOCATION_LIMIT_HOURS) {
-            // within the past hour
-            int killAmount = locationAmountCache.computeIfAbsent(location, empty -> 0);
-
-            locationAmountCache.put(location, killAmount + 1);
-            locationLastTimeCache.put(location, System.currentTimeMillis());
-
-            return killAmount < Config.LIMIT_FOR_LOCATION;
+        if (cache.isWithinConfiguredTime()) {
+            return cache.getAndIncrement() < Config.LIMIT_FOR_LOCATION;
         }
 
-        locationAmountCache.put(location, 1);
-        locationLastTimeCache.put(location, System.currentTimeMillis());
+        cache.getAndIncrement();
         return true;
     }
 
@@ -303,7 +306,7 @@ public final class DropHandler implements Listener {
     }
 
     @EventHandler
-    void onPlayerJoinEvent(PlayerJoinEvent event) {
+    void onPlayerQuitEvent(PlayerQuitEvent event) {
         coins.getSettings().resetMultiplier(event.getPlayer());
     }
 }

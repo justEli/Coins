@@ -3,6 +3,7 @@ package me.justeli.coins;
 import me.justeli.coins.command.CoinsCommand;
 import me.justeli.coins.command.DisabledCommand;
 import me.justeli.coins.command.WithdrawCommand;
+import me.justeli.coins.config.Config;
 import me.justeli.coins.handler.HopperHandler;
 import me.justeli.coins.handler.InventoryHandler;
 import me.justeli.coins.handler.InteractionHandler;
@@ -159,6 +160,12 @@ public final class Coins extends JavaPlugin {
 
     public void console(Level type, String message) {
         getLogger().log(type, message);
+    }
+
+    public void debug(String message) {
+        if (Config.DEBUG_LOGGING) {
+            getLogger().log(Level.WARNING, "(Debug @ %d) ".formatted(System.currentTimeMillis()) + message);
+        }
     }
 
     // getters from other places
