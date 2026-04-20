@@ -25,18 +25,17 @@ public final class PluginVersionUtil {
     }
 
     public void checkVersion() {
-        if (!Config.CHECK_FOR_UPDATES) {
-            return;
-        }
-
         Optional<PluginVersion> version = retrieveLatestVersion("JustEli/Coins");
         if (version.isEmpty()) {
             return;
         }
 
         this.latestVersion = version.get();
-        String currentVersion = coins.getDescription().getVersion();
+        if (!Config.CHECK_FOR_UPDATES) {
+            return;
+        }
 
+        String currentVersion = coins.getDescription().getVersion();
         if (!currentVersion.equals(latestVersion.tag()) && !latestVersion.preRelease()) {
             coins.line(Level.WARNING);
             coins.console(Level.WARNING, "  Detected an outdated version of Coins (%s is installed).".formatted(
