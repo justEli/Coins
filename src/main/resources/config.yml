@@ -53,9 +53,9 @@ withdrawn-coin-names:
   singular: '&e{amount} &6Coin'
   plural: '&e{amount} &6Coins'
 
-# The material that coins should be made of.
-# Material list: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
-coin-item: 'sunflower'
+# The material that coins should be made of. Use a namespaced key for the material. One
+#  location to find this is at the suggestions of the /give command.
+coin-item: 'minecraft:sunflower'
 
 # You can also set a custom texture for the coin, as a skull. Filling this will ignore
 #  'coin-item'. Input the text from the example page at "Other > Value" at the bottom of
@@ -174,11 +174,11 @@ drop-with-any-death: false
 #  specific type. If you want to have no mob multipliers, you can set
 #  'mob-multiplier: {}'. You can also add mobs here that don't drop coins in the first
 #  place, but want them to drop coins anyway. For example if 'passive-drop' is false, but
-#  you still want cows and sheep to drop coins, add them down here.
-# Mobs: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/entity/EntityType.html
+#  you still want cows and sheep to drop coins, add them down here. Use a namespaced key
+#  for the entity type. One location to find this is at the suggestions of /summon.
 mob-multiplier:
-  'ender dragon': 20
-  'wither': 10
+  'minecraft:ender_dragon': 20
+  'minecraft:wither': 10
 
 # Prevent slimes and magma cubes spawned by splits to drop coins. I've noticed that
 #  players can easily get many coins in slime chunks when keeping this to false. When set
@@ -208,28 +208,28 @@ prevent-alts: true
 #  item than the block itself. For example a Diamond Ore drops Diamond without Silk Touch.
 #  So it doesn't work when using Silk Touch. That is because the player would be able to
 #  place the block again, and get coins once again. The number behind the block name below
-#  is the multiplier for coin drops.
-# Materials: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Material.html
+#  is the multiplier for coin drops. Use a namespaced key for the material. One location
+#  to find this is at the suggestions of the /give command.
 block-drops:
-  'diamond ore': 2
-  'deepslate diamond ore': 3
-  'spawner': 5 # You may need to remove this if you have SilkSpawners.
-  'emerald ore': 2
-  'deepslate emerald ore': 2
-  'gold ore': 1
-  'deepslate gold ore': 1
-  'nether gold ore': 1
-  'iron ore': 1
-  'deepslate iron ore': 1
-  'lapis ore': 1
-  'deepslate lapis ore': 1
-  'copper ore': 1
-  'deepslate copper ore': 1
-  'nether quartz ore': 1
-  'coal ore': 1
-  'deepslate coal ore': 1
-  'redstone ore': 1
-  'deepslate redstone ore': 1
+  'minecraft:diamond_ore': 2
+  'minecraft:deepslate_diamond_ore': 3
+  'minecraft:spawner': 5
+  'minecraft:emerald_ore': 2
+  'minecraft:deepslate_emerald_ore': 2
+  'minecraft:gold_ore': 1
+  'minecraft:deepslate_gold_ore': 1
+  'minecraft:nether_gold_ore': 1
+  'minecraft:iron_ore': 1
+  'minecraft:deepslate_iron_ore': 1
+  'minecraft:lapis_ore': 1
+  'minecraft:deepslate_lapis_ore': 1
+  'minecraft:copper_ore': 1
+  'minecraft:deepslate_copper_ore': 1
+  'minecraft:nether_quartz_ore': 1
+  'minecraft:coal_ore': 1
+  'minecraft:deepslate_coal_ore': 1
+  'minecraft:redstone_ore': 1
+  'minecraft:deepslate_redstone_ore': 1
 
 # What's the chance per mined block? Set to 0 to disable dropping coins for blocks.
 mine-percentage: 0.20

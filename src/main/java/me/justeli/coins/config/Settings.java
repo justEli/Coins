@@ -69,11 +69,17 @@ public final class Settings {
     );
 
     public void reloadLanguage() {
+        List<String> addedLanguages = new ArrayList<>();
         for (String language : LANGUAGES) {
             if (!new File(coins.getDataFolder() + File.separator + "language" + File.separator + language + ".json").exists()) {
                 coins.saveResource("language/" + language + ".json", false);
-                coins.console(Level.INFO, "Added the language '" + language + "' to Coins, which can now be used in the config.");
+                addedLanguages.add(language.substring(0, 1).toUpperCase() + language.substring(1));
             }
+        }
+
+        if (!addedLanguages.isEmpty()) {
+            coins.console(Level.INFO, "These language(s) can now be used in the config:");
+            coins.console(Level.INFO, "- " + String.join(", ", addedLanguages));
         }
 
         initializeMessages(Config.LANGUAGE);
@@ -173,7 +179,7 @@ public final class Settings {
 
                     for (Map.Entry<String, Object> mapLoop : map.entrySet()) {
                         configMap.put(
-                            mapLoop.getKey().toUpperCase().replace(" ", "_"),
+                            mapLoop.getKey(),
                             Util.parseInt(mapLoop.getValue().toString()).orElse(1)
                         );
                     }
@@ -268,16 +274,27 @@ public final class Settings {
         Config.DECIMAL_FORMATTER = new DecimalFormat("#" + groupSeparator + "##0." + decimals, formatSymbols);
     }
 
-    // todo also parse with Registry.MATERIAL
     private Optional<Material> getMaterial(String name, String configKey) {
-        Material material = Material.matchMaterial(name.replace(" ", "_").toUpperCase().replace("COIN", "SUNFLOWER"));
-        if (material == null) {
-            showWarning(("The material '%s' in the config at `%s` does not exist. Please use a material " +
-                "from: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html").formatted(name, configKey));
-            return Optional.empty();
+        var key = NamespacedKey.fromString(name);
+        if (key != null) {
+            var material = Registry.MATERIAL.get(key);
+            if (material != null) {
+                return Optional.of(material);
+            }
         }
 
-        return Optional.of(material);
+        Material material = Material.matchMaterial(name.replace(" ", "_").toUpperCase().replace("COIN", "SUNFLOWER"));
+        if (material != null) {
+            showWarning(("Found an outdated material '%s' in the config at `%s`. Change this to its namespaced " +
+                "key '%s'. Support for outdated material types will be removed in a future release.").formatted(
+                name, configKey, material.getKey().toString()
+            ));
+            return Optional.of(material);
+        }
+
+        showWarning(("The material '%s' in the config at `%s` does not exist. Please use a namespaced material, " +
+            "as from the suggestions of the /give command.").formatted(name, configKey));
+        return Optional.empty();
     }
 
     private Optional<MessagePosition> getMessagePosition(String name, String configKey) {
@@ -292,12 +309,25 @@ public final class Settings {
     }
 
     private Optional<EntityType> getEntityType(String name, String configKey) {
+        var key = NamespacedKey.fromString(name);
+        if (key != null) {
+            var material = Registry.ENTITY_TYPE.get(key);
+            if (material != null) {
+                return Optional.of(material);
+            }
+        }
+
         try {
-            return Optional.of(EntityType.valueOf(name.replace(" ", "_").toUpperCase()));
+            var type = EntityType.valueOf(name.replace(" ", "_").toUpperCase());
+            showWarning(("Found an outdated entity type '%s' in the config at `%s`. Change this to its namespaced " +
+                "key '%s'. Support for outdated entity types will be removed in a future release.").formatted(
+                name, configKey, type.getKey().toString()
+            ));
+            return Optional.of(type);
         }
         catch (IllegalArgumentException exception) {
-            showWarning(("The mob name '%s' in the config at `%s` does not exist. Please use a name from: " +
-                "https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/entity/EntityType.html").formatted(name, configKey));
+            showWarning(("The entity type '%s' in the config at `%s` does not exist. Please use a namespaced entity type, " +
+                "as from the suggestions of the /summon command.").formatted(name, configKey));
 
             return Optional.empty();
         }
@@ -307,8 +337,8 @@ public final class Settings {
         // outdated way of parsing sound
         var sound = fromEnumSound(name);
         if (sound.isPresent()) {
-            showWarning(("Found an outdated sound key '%s' in the config at `%s`. Change this to its namespaced " +
-                "key '%s'. Support for outdated sound keys will be removed in a future release.").formatted(
+            showWarning(("Found an outdated sound type '%s' in the config at `%s`. Change this to its namespaced " +
+                "key '%s'. Support for outdated sound types will be removed in a future release.").formatted(
                 name, configKey, sound.get().getKey().toString()
             ));
             return Optional.of(new SoundKey(sound.get()));
@@ -319,8 +349,8 @@ public final class Settings {
             return Optional.of(new SoundKey(key));
         }
 
-        showWarning(("The sound '%s' in the config at `%s` is not a valid namespaced sound key. Please use a namespaced " +
-            "sound, as from /playsound. This can also be a custom sound.").formatted(name, configKey));
+        showWarning(("The sound '%s' in the config at `%s` is not a valid namespaced sound type. Please use a namespaced " +
+            "sound, as from the suggestions of the /playsound command. This can also be a custom sound.").formatted(name, configKey));
         return Optional.empty();
     }
 
