@@ -82,7 +82,7 @@ public final class Settings {
         for (String language : LANGUAGES) {
             if (!new File(coins.getDataFolder() + File.separator + "language" + File.separator + language + ".json").exists()) {
                 coins.saveResource("language/" + language + ".json", false);
-                addedLanguages.add(language.substring(0, 1).toUpperCase() + language.substring(1));
+                addedLanguages.add(Util.toCapitalized(language));
             }
         }
 
