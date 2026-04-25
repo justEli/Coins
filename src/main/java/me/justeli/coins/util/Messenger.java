@@ -1,8 +1,9 @@
 package me.justeli.coins.util;
 
 import me.justeli.coins.Coins;
-import me.justeli.coins.config.Message;
 import me.justeli.coins.config.MessagePosition;
+import me.justeli.coins.language.FormatEntry;
+import me.justeli.coins.language.Language;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
@@ -36,6 +37,13 @@ public final class Messenger {
         }
     }
 
+    // formatting example
+    // final Component broadcastMessage = MiniMessage.miniMessage().deserialize(
+    //    "<red><bold>BROADCAST</red> <name> <dark_gray>»</dark_gray> <message>",
+    //    Placeholder.component("name", name),      // i.e. currency symbol
+    //    Placeholder.unparsed("message", message)  // i.e. amount of money
+    // );
+
     private static final TextComponent EMPTY = Component.empty();
     private static final Title.Times TITLE_DURATION = Title.Times.times(
         Duration.ofMillis(500), Duration.ofSeconds(3), Duration.ofMillis(500)
@@ -43,6 +51,10 @@ public final class Messenger {
 
     public void sendMessage(CommandSender sender, Component component) {
         sendMessage(sender, MessagePosition.CHAT, component);
+    }
+
+    public void sendMessage(CommandSender sender, FormatEntry entry) {
+        sendMessage(sender, entry.getComponent());
     }
 
     public void sendMessage(CommandSender sender, MessagePosition position, Component component) {
@@ -53,11 +65,6 @@ public final class Messenger {
             case TITLE -> audience.showTitle(Title.title(component, EMPTY, TITLE_DURATION));
             case SUBTITLE -> audience.showTitle(Title.title(EMPTY, component, TITLE_DURATION));
         }
-    }
-
-    public void sendNoPermission(CommandSender sender) {
-        sender.sendMessage(Message.NO_PERMISSION.toString());
-//        sendMessage(sender, Language.NO_PERMISSION_COMMAND.toComponent());
     }
 
     private Audience getAudience(CommandSender sender) {
@@ -88,7 +95,7 @@ public final class Messenger {
         return builder.appendSpace().append(HEADER_LINE).build();
     }
 
-    public void sendHeader(CommandSender sender, String title) {
+    public void sendHeader(CommandSender sender, @Nullable String title) {
         sendMessage(sender, getHeader(title));
     }
 
@@ -113,14 +120,20 @@ public final class Messenger {
     /// @param command has to start with a slash
     public void sendPage(CommandSender sender, List<Component> allLines, int pageNumber, @Nullable String title, String command) {
         if (pageNumber <= 0 || allLines.isEmpty()) {
-            sendMessage(sender, Component.text("No page found")); // Language.NO_PAGE_FOUND.toComponent()
+            sendMessage(sender, Language.PAGE_NOT_FOUND);
+            return;
+        }
+
+        List<Component> pageLines = getPage(allLines, pageNumber);
+        if (pageLines.isEmpty()) {
+            sendMessage(sender, Language.PAGE_NOT_FOUND);
             return;
         }
 
         TextComponent.Builder component = Component.text()
             .append(getHeader(title));
 
-        Component page = Component.text("Page"); // Language.PAGE.toComponentCapitalized()
+        Component page = Language.WORD_PAGE.getCapitalizedComponent();
         int previousPage = pageNumber - 1;
         if (previousPage > 0) {
             component.appendSpace().append(
@@ -151,7 +164,7 @@ public final class Messenger {
             );
         }
 
-        for (Component line : getPage(allLines, pageNumber)) {
+        for (Component line : pageLines) {
             component.appendNewline();
             component.append(line);
         }

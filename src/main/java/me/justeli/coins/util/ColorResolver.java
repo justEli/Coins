@@ -20,7 +20,7 @@ public final class ColorResolver implements TagResolver {
     private static final Map<String, TextColor> KEYS = new HashMap<>();
 
     // https://coolors.co/bf1111-ff0000-ff7711-ffc430-ffcc88-6dd47e-148c30-95a5a6
-    public static final TextColor DOWN = TextColor.color(0xBF1111);
+    public static final TextColor DOWN = TextColor.color(0xBF1111); // todo should be configurable imo
     public static final TextColor ERROR = TextColor.color(0xFF0000);
     public static final TextColor PRIMARY = TextColor.color(0xFF7711);
     public static final TextColor COINS = TextColor.color(0xFFC430);

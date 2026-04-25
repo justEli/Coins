@@ -4,7 +4,6 @@ import me.justeli.coins.Coins;
 import me.justeli.coins.config.Config;
 import me.justeli.coins.config.Settings;
 import me.justeli.coins.util.ComponentUtil;
-import me.justeli.coins.util.Util;
 import org.bstats.charts.SimplePie;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -20,7 +19,6 @@ public final class Metrics {
     private final Coins coins;
     public Metrics(Coins coins) {
         this.coins = coins;
-        register();
     }
 
     public static void metrics(JavaPlugin plugin, Consumer<Metric> consumer) {
@@ -47,9 +45,18 @@ public final class Metrics {
         return (int) Math.clamp(amount * 100D, 0, 100) + "%";
     }
 
-    public void register() {
+    private static final String ECONOMY_HOOK = "economyHook";
+
+    public void register(boolean empty) {
+        if (empty) {
+            metrics(coins, metrics ->
+                metrics.add(ECONOMY_HOOK, () -> coins.getEconomy().name().orElse("None"))
+            );
+            return;
+        }
+
         metrics(coins, metrics -> {
-            metrics.add("language", () -> Util.toCapitalized(Config.LANGUAGE));
+            metrics.add("locale", () -> Config.LOCALE);
             metrics.add("currencySymbol", () -> Config.CURRENCY_SYMBOL);
             metrics.add("coinItem", () -> coins.getBaseCoin().cloneBaseDropped().build().getType().getKey().toString());
             metrics.add("usingSkullTexture", () -> Config.SKULL_TEXTURE != null && !Config.SKULL_TEXTURE.isEmpty());
@@ -88,13 +95,12 @@ public final class Metrics {
             metrics.add("droppedCoinName", () -> ComponentUtil.toStripped(Config.DROPPED_COIN_NAME));
             metrics.add("withdrawnCoinNamesSingular", () -> ComponentUtil.toStripped(Config.WITHDRAWN_COIN_NAME_SINGULAR));
             metrics.add("withdrawnCoinNamesPlural", () -> ComponentUtil.toStripped(Config.WITHDRAWN_COIN_NAME_PLURAL));
-            metrics.add("detectLegacyCoins", () -> false);
             metrics.add("allowNameChange", () -> Config.ALLOW_NAME_CHANGE);
             metrics.add("allowModification", () -> Config.ALLOW_MODIFICATION);
             metrics.add("checkForUpdates", () -> Config.CHECK_FOR_UPDATES);
             metrics.add("enchantIncrement", () -> toPercentage(Config.ENCHANT_INCREMENT));
             metrics.add("legacyConfigKeys", () -> Settings.USING_LEGACY_KEYS);
-            metrics.add("economyHook", () -> coins.getEconomy().name().orElse("None"));
+            metrics.add(ECONOMY_HOOK, () -> coins.getEconomy().name().orElse("None"));
             metrics.add("disabledWorldsCount", () -> Config.DISABLED_WORLDS.size());
             metrics.add("mobMultipliers", () -> Config.MOB_MULTIPLIER.size());
             metrics.add("blockDrops", () -> Config.BLOCK_DROPS.size());

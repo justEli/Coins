@@ -40,15 +40,6 @@ public final class Util {
         return DATE_FORMAT.format(new Date(millis));
     }
 
-    public static String formatAmountAndCurrency(String text, double amount) {
-        String displayAmount = toFormattedMoneyDecimals(amount);
-        return formatCurrency(text.replace("{amount}", displayAmount));
-    }
-
-    public static String formatCurrency(String text) {
-        return text.replace("{currency}", Config.CURRENCY_SYMBOL);
-    }
-
     public static String toCapitalized(String message) {
         return (message == null || message.isEmpty())? "" : message.substring(0, 1).toUpperCase() + message.substring(1).toLowerCase();
     }
@@ -129,18 +120,18 @@ public final class Util {
         return Settings.DECIMAL_FORMATTER.format(toRoundedMoneyDecimals(input));
     }
 
-    public static Optional<Integer> parseInt(String arg) {
+    public static Optional<Integer> parseInt(String number) {
         try {
-            return Optional.of(Integer.parseInt(arg));
+            return Optional.of(Integer.parseInt(number.replaceAll("[<>\\[\\]]", "")));
         }
         catch (NumberFormatException exception) {
             return Optional.empty();
         }
     }
 
-    public static Optional<Double> parseDouble(String arg) {
+    public static Optional<Double> parseDouble(String number) {
         try {
-            return Optional.of(toRoundedMoneyDecimals(Double.parseDouble(arg)));
+            return Optional.of(toRoundedMoneyDecimals(Double.parseDouble(number.replaceAll("[<>\\[\\]]", ""))));
         }
         catch (NumberFormatException exception) {
             return Optional.empty();

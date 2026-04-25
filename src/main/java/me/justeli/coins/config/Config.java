@@ -84,8 +84,12 @@ public class Config {
     @ConfigEntry(value = "check-for-updates", required = false)
     public static Boolean CHECK_FOR_UPDATES = true;
 
-    @ConfigEntry("language")
-    public static String LANGUAGE = "English";
+    @Deprecated
+    @ConfigEntry(value = "language", required = false)
+    public static String LANGUAGE = "";
+
+    @ConfigEntry("locale")
+    public static String LOCALE = "en-US";
 
     @ConfigEntry("coin-item")
     public static Material COIN_ITEM = Material.SUNFLOWER;

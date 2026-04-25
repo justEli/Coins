@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Objects;
+import java.util.logging.Level;
 
 /**
  * @author Eli
@@ -65,6 +66,8 @@ public final class BaseCoin {
         this.otherCoin = coins.meta(baseCoin.clone())
             .setName(Config.DROPPED_COIN_NAME)
             .setData(CoinMeta.COINS_TYPE, CoinMeta.TYPE_OTHER);
+
+        coins.console(Level.INFO, "Configured coin types have been loaded.");
     }
 
     public MetaBuilder cloneBaseDropped() {

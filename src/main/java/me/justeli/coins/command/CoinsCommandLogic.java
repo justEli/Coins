@@ -2,15 +2,14 @@ package me.justeli.coins.command;
 
 import me.justeli.coins.Coins;
 import me.justeli.coins.config.Config;
-import me.justeli.coins.config.Message;
+import me.justeli.coins.language.EntryReplacement;
+import me.justeli.coins.language.Language;
 import me.justeli.coins.item.CoinMeta;
 import me.justeli.coins.util.ColorResolver;
 import me.justeli.coins.util.Permissions;
 import me.justeli.coins.util.VersionPlugin;
 import me.justeli.coins.util.Util;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -23,7 +22,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.SplittableRandom;
@@ -40,6 +38,17 @@ public abstract class CoinsCommandLogic {
 
     private static final SplittableRandom RANDOM = new SplittableRandom();
 
+    private static final EntryReplacement FILL_DURATION = new EntryReplacement("duration");
+    private static final EntryReplacement FILL_AMOUNT = new EntryReplacement("amount");
+    private static final EntryReplacement FILL_VERSION = new EntryReplacement("version");
+    private static final EntryReplacement FILL_DATE = new EntryReplacement("date");
+    private static final EntryReplacement FILL_DESCRIPTION = new EntryReplacement("description");
+    private static final EntryReplacement FILL_TYPE = new EntryReplacement("type");
+    private static final EntryReplacement.Filled FILL_MIN_1 = new EntryReplacement("min").filled(1);
+    private static final EntryReplacement FILL_MAX = new EntryReplacement("max");
+    private static final EntryReplacement FILL_RADIUS = new EntryReplacement("radius");
+    private static final EntryReplacement FILL_TARGET = new EntryReplacement("target");
+
     public void executeCommand(@NotNull CommandSender sender, @NotNull String[] args) {
         if (args.length == 0) {
             handleSendHelp(sender);
@@ -54,20 +63,23 @@ public abstract class CoinsCommandLogic {
                     coins.getSettings().reload();
                     coins.getBaseCoin().reload();
 
-                    sender.sendMessage(Message.RELOAD_SUCCESS.replace(Long.toString(System.currentTimeMillis() - millis)));
-                    if (coins.getSettings().getWarningCount() != 0) {
-                        sender.sendMessage(Message.MINOR_ISSUES.toString());
+                    long duration = System.currentTimeMillis() - millis;
+                    coins.getMessenger().sendMessage(sender, Language.RELOAD_PERFORM.with(FILL_DURATION.filled(duration)));
+
+                    var amount = coins.getSettings().getWarningCount();
+                    if (amount != 0) {
+                        coins.getMessenger().sendMessage(sender, Language.RELOAD_WARNINGS.with(FILL_AMOUNT.filled(amount)));
                     }
                     else {
-                        sender.sendMessage(Message.CHECK_SETTINGS.toString());
+                        coins.getMessenger().sendMessage(sender, Language.RELOAD_SETTINGS);
                     }
                 }
             }
             case "settings" -> {
                 if (checkPermission(sender, Permissions.hasCommandSettings(sender))) {
                     int page = args.length > 1? Util.parseInt(args[1]).orElse(1) : 1;
-                    List<Component> keys = coins.getSettings().getKeys();
-                    coins.getMessenger().sendPage(sender, keys, page, "Settings", "/coins settings");
+                    List<Component> keys = coins.getSettings().getConfigKeys();
+                    coins.getMessenger().sendPage(sender, keys, page, Language.WORD_SETTINGS.getCapitalized(), "/coins settings");
                 }
             }
             case "drop" -> {
@@ -82,42 +94,46 @@ public abstract class CoinsCommandLogic {
             }
             case "lang", "language" -> {
                 if (checkPermission(sender, Permissions.hasCommandLanguage(sender))) {
-                    for (Message message : Message.values()) {
-                        sender.sendMessage(message.toString());
-                    }
+                     coins.getMessenger().sendHeader(sender, Language.WORD_LANGUAGE.getCapitalized());
+                    // TODO
+//                    for (Message message : Message.values()) {
+//                        sender.sendMessage(message.toString());
+//                    }
                 }
             }
             case "version", "update" -> {
                 if (checkPermission(sender, Permissions.hasCommandVersion(sender))) {
-                    coins.getMessenger().sendHeader(sender, "Version");// todo language
+                    coins.getMessenger().sendHeader(sender, Language.WORD_VERSION.getCapitalized());
 
                     Optional<VersionPlugin> latestVersion = coins.getVersionCheck().getLatestVersion();
                     String currentVersion = coins.getVersionCheck().getPluginVersion();
 
-                    sender.sendMessage(Message.CURRENTLY_INSTALLED.replace(currentVersion));
+                    coins.getMessenger().sendMessage(sender, Language.VERSION_CURRENT.with(FILL_VERSION.filled(currentVersion)));
 
                     if (latestVersion.isEmpty()) {
-                        sender.sendMessage(Message.LATEST_RETRIEVE_FAIL.toString());
+                        coins.getMessenger().sendMessage(sender, Language.VERSION_FAIL);
                     }
                     else if (latestVersion.get().getTag().equals(currentVersion)) {
-                        sender.sendMessage(Message.UP_TO_DATE.replace(currentVersion));
+                        coins.getMessenger().sendMessage(sender, Language.VERSION_LATEST);
                     }
                     else {
-                        sender.sendMessage(Message.LATEST_RELEASE.replace(
-                            latestVersion.get().getTag(),
-                            Util.formatDate(latestVersion.get().getTime()),
-                            latestVersion.get().getName(),
-                            coins.getDescription().getWebsite()
+                        coins.getMessenger().sendMessage(sender, Language.VERSION_RELEASE.with(
+                            FILL_VERSION.filled(latestVersion.get().getTag()),
+                            FILL_DATE.filled(Util.formatDate(latestVersion.get().getTime())),
+                            FILL_DESCRIPTION.filled(latestVersion.get().getName())
                         ));
+                        coins.getMessenger().sendMessage(sender, coins.getSettings().getPluginUrl());
                     }
                 }
             }
             case "toggle" -> {
                 if (checkPermission(sender, Permissions.hasCommandToggle(sender))) {
-                    Message message = coins.toggleDisabled()? Message.ENABLED : Message.DISABLED;
-                    sender.sendMessage(Message.GLOBALLY_DISABLED_INFORM.replace(message.toString()));
+                    coins.getMessenger().sendMessage(sender, Language.TOGGLE_TOGGLED.with(FILL_TYPE.filled(
+                        coins.toggleDisabled()? Language.WORD_ENABLED.toString() : Language.WORD_DISABLED.toString()
+                    )));
+
                     if (coins.isDisabled()) {
-                        sender.sendMessage(Message.DISABLED_DESCRIPTION.toString());
+                        coins.getMessenger().sendMessage(sender, Language.TOGGLE_DISABLED);
                     }
                 }
             }
@@ -130,7 +146,7 @@ public abstract class CoinsCommandLogic {
             return true;
         }
 
-        sender.sendMessage(Message.NO_PERMISSION.toString());
+        coins.getMessenger().sendMessage(sender, Language.COMMAND_NO_PERMISSION);
         return false;
     }
 
@@ -163,7 +179,7 @@ public abstract class CoinsCommandLogic {
                 if ("all".startsWith(remaining)) {
                     list.add("all");
                 }
-                list.add("[radius]");
+                list.add("[%s]".formatted(Language.WORD_RADIUS));
             }
             if (args[0].equalsIgnoreCase("drop") && Permissions.hasCommandDrop(sender)) {
                 for (Player onlinePlayer : coins.getServer().getOnlinePlayers()) {
@@ -173,7 +189,7 @@ public abstract class CoinsCommandLogic {
                 }
                 if (remaining.isEmpty() || remaining.contains(",") || Util.parseInt(remaining).isPresent()) {
                     list.add("<x,y,z>");
-                    list.add("<x,y,z,world>");
+                    list.add("<x,y,z,%s>".formatted(Language.WORD_WORLD));
                 }
             }
             if (args[0].equalsIgnoreCase("settings") && Permissions.hasCommandSettings(sender)) {
@@ -184,39 +200,48 @@ public abstract class CoinsCommandLogic {
         }
         else if (args.length == 3) {
             if (args[0].equalsIgnoreCase("remove") && Permissions.hasCommandRemove(sender)) {
-                list.add("<amount>");
+                list.add("<%s>".formatted(Language.WORD_AMOUNT));
             }
             else if (args[0].equalsIgnoreCase("drop") && Permissions.hasCommandDrop(sender)) {
-                list.add("<amount>");
+                list.add("<%s>".formatted(Language.WORD_AMOUNT));
             }
         }
         else if (args.length == 4) {
             if (args[0].equalsIgnoreCase("remove") && Permissions.hasCommandRemove(sender)) {
-                list.add("[radius]");
+                list.add("[%s]".formatted(Language.WORD_RADIUS));
             }
             else if (args[0].equalsIgnoreCase("drop") && Permissions.hasCommandDrop(sender)) {
-                list.add("[radius]");
+                list.add("[%s]".formatted(Language.WORD_RADIUS));
             }
         }
         else if (args.length == 5) {
             if (args[0].equalsIgnoreCase("drop") && Permissions.hasCommandDrop(sender)) {
-                list.add("[worth]");
+                list.add("[%s]".formatted(Language.WORD_VALUE));
             }
         }
 
         return list;
     }
 
+    private Component getDropCommand() {
+        return Component.text("/coins drop <%s|x,y,z[,%s]> <%s> [%s] [%s]".formatted(
+            Language.WORD_PLAYER, Language.WORD_WORLD, Language.WORD_AMOUNT, Language.WORD_RADIUS, Language.WORD_VALUE
+        ), ColorResolver.VAR);
+    }
+
     private void handleDropCoins(CommandSender sender, String[] args) {
         if (args.length < 3) {
-            sender.sendMessage(Message.DROP_USAGE.toString());
+            coins.getMessenger().sendMessage(sender, getDropCommand());
+            coins.getMessenger().sendMessage(sender, Language.DROP_USAGE);
             return;
         }
 
-        Optional<Player> onlinePlayer = Util.getOnlinePlayer(args[1]);
+        Optional<Player> target = Util.getOnlinePlayer(args[1]);
         Optional<Integer> amount = Util.parseInt(args[2]);
         if (amount.isEmpty()) {
-            sender.sendMessage(Message.INVALID_NUMBER.toString());
+            coins.getMessenger().sendMessage(
+                sender, Language.COMMAND_INVALID_NUMBER.with(FILL_TYPE.filled(Language.WORD_AMOUNT))
+            );
             return;
         }
 
@@ -228,7 +253,9 @@ public abstract class CoinsCommandLogic {
         if (args.length >= 4) {
             Optional<Integer> inputRadius = Util.parseInt(args[3]);
             if (inputRadius.isEmpty()) {
-                sender.sendMessage(Message.INVALID_NUMBER.toString());
+                coins.getMessenger().sendMessage(
+                    sender, Language.COMMAND_INVALID_NUMBER.with(FILL_TYPE.filled(Language.WORD_RADIUS))
+                );
                 return;
             }
 
@@ -239,18 +266,35 @@ public abstract class CoinsCommandLogic {
         if (args.length >= 5) {
             Optional<Double> inputWorth = Util.parseDouble(args[4]);
             if (inputWorth.isEmpty() || inputWorth.get() < 0) {
-                sender.sendMessage(Message.INVALID_NUMBER.toString());
+                coins.getMessenger().sendMessage(
+                    sender, Language.COMMAND_INVALID_NUMBER.with(FILL_TYPE.filled(Language.WORD_VALUE))
+                );
                 return;
             }
 
             worth = inputWorth.get();
         }
 
+        if (radius < 1 || radius > 80) {
+            coins.getMessenger().sendMessage(sender, Language.COMMAND_INVALID_RANGE.with(
+                FILL_TYPE.filled(Language.WORD_RADIUS), FILL_MIN_1, FILL_MAX.filled(80)
+            ));
+            return;
+        }
+
+        if (amount.get() < 1 || amount.get() > 1000) {
+            coins.getMessenger().sendMessage(sender, Language.COMMAND_INVALID_RANGE.with(
+                FILL_TYPE.filled(Language.WORD_AMOUNT), FILL_MIN_1, FILL_MAX.filled(1000)
+            ));
+            return;
+        }
+
         Location location;
         String name;
-        if (onlinePlayer.isEmpty()) {
+
+        if (target.isEmpty()) {
             if (!args[1].contains(",")) {
-                sender.sendMessage(Message.PLAYER_NOT_FOUND.toString());
+                coins.getMessenger().sendMessage(sender, Language.COMMAND_INVALID_PLAYER);
                 return;
             }
             else {
@@ -269,61 +313,55 @@ public abstract class CoinsCommandLogic {
                         world = player.getWorld();
                     }
                     if (world == null) {
-                        world = coins.getServer().getWorlds().get(0);
+                        world = coins.getServer().getWorlds().getFirst();
                     }
 
                     location = new Location(world, x.get(), y.get(), z.get());
-                    name = Util.toFormattedMoneyDecimals(x.get()) + ", " + Util.toFormattedMoneyDecimals(y.get()) + ", " + Util.toFormattedMoneyDecimals(z.get());
+                    name = "x%.1f, y%.1f, z%.1f".formatted(x.get(), y.get(), z.get());
                 }
                 else {
-                    sender.sendMessage(Message.COORDS_NOT_FOUND.toString());
+                    coins.getMessenger().sendMessage(sender, Language.COMMAND_INVALID_LOCATION);
                     return;
                 }
             }
         }
         else {
-            location = onlinePlayer.get().getLocation();
-            name = onlinePlayer.get().getName();
+            location = target.get().getLocation();
+            name = target.get().getName();
         }
 
         if (Util.isDisabledHere(location.getWorld())) {
-            sender.sendMessage(Message.COINS_DISABLED.toString());
-            return;
-        }
-
-        if (radius < 1 || radius > 80) {
-            sender.sendMessage(Message.INVALID_RADIUS.toString());
-            return;
-        }
-
-        if (amount.get() < 1 || amount.get() > 1000) {
-            sender.sendMessage(Message.INVALID_AMOUNT.toString());
+            coins.getMessenger().sendMessage(sender, Language.GENERAL_DISABLED);
             return;
         }
 
         dropCoins(location, radius, amount.get(), worth);
-        sender.sendMessage(Message.SPAWNED_COINS.replace(
-            Long.toString(amount.get()),
-            Long.toString(radius),
-            name
+        coins.getMessenger().sendMessage(sender, Language.DROP_DROPPING.with(
+            FILL_AMOUNT.filled(amount.get()),
+            FILL_RADIUS.filled(radius),
+            FILL_TARGET.filled(name)
         ));
     }
 
     private void handleRemoveCoins(CommandSender sender, String[] args) {
-        Collection<Item> items = coins.getServer().getWorlds().get(0).getEntitiesByClass(Item.class);
+        Collection<Item> items = coins.getServer().getWorlds().getFirst().getEntitiesByClass(Item.class);
         double radius = 0;
 
         if (args.length >= 2 && sender instanceof Player) {
             if (!args[1].equalsIgnoreCase("all")) {
                 Optional<Integer> inputRadius = Util.parseInt(args[1]);
                 if (inputRadius.isEmpty()) {
-                    sender.sendMessage(Message.INVALID_RADIUS.toString());
+                    coins.getMessenger().sendMessage(
+                        sender, Language.COMMAND_INVALID_NUMBER.with(FILL_TYPE.filled(Language.WORD_RADIUS))
+                    );
                     return;
                 }
 
                 radius = inputRadius.get();
                 if (radius < 1 || radius > 80) {
-                    sender.sendMessage(Message.INVALID_RADIUS.toString());
+                    coins.getMessenger().sendMessage(sender, Language.COMMAND_INVALID_RANGE.with(
+                        FILL_TYPE.filled(Language.WORD_RADIUS), FILL_MIN_1, FILL_MAX.filled(80)
+                    ));
                     return;
                 }
             }
@@ -353,66 +391,69 @@ public abstract class CoinsCommandLogic {
             float random = RANDOM.nextFloat() * 3F;
             item.setVelocity(new Vector(0, random, 0));
 
-            // works on Folia
             coins.getScheduler().runEntityTaskLater(item, (long) (random * 5F), item::remove);
-
             amount++;
         }
 
-        sender.sendMessage(Message.REMOVED_COINS.replace(Long.toString(amount)));
+        coins.getMessenger().sendMessage(sender, Language.REMOVE_REMOVED.with(FILL_AMOUNT.filled(amount)));
     }
 
+    // todo add description as hover event
+    // todo click event to suggest command
     private void handleSendHelp(CommandSender sender) {
         String currentVersion = coins.getVersionCheck().getPluginVersion();
         Optional<VersionPlugin> latestVersion = coins.getVersionCheck().getLatestVersion();
 
-        int lines = 0;
-
-        String notice = "";
         if (coins.isDisabled()) {
-            notice = " " + Message.GLOBALLY_DISABLED;
+            coins.getMessenger().sendHeader(sender, Language.WORD_DISABLED.getCapitalized());
         }
         else if (latestVersion.isPresent() && !latestVersion.get().getTag().equals(currentVersion) && Permissions.hasCommandVersion(sender)) {
-            notice = " " + Message.OUTDATED.replace("/coins update");
+            coins.getMessenger().sendHeader(sender, Language.WORD_OUTDATED.getCapitalized());
+        }
+        else {
+            coins.getMessenger().sendHeader(sender, null);
         }
 
-        coins.getMessenger().sendHeader(sender, notice);
-
+        int lines = 0;
+        if (Config.ENABLE_WITHDRAW && Permissions.hasWithdraw(sender)) {
+            coins.getMessenger().sendMessage(sender, Component.text("/withdraw <%s> [%s]".formatted(
+                Language.WORD_VALUE, Language.WORD_AMOUNT
+            ), ColorResolver.VAR));
+            lines++;
+        }
         if (Permissions.hasCommandDrop(sender)) {
-            sender.sendMessage(Message.DROP_USAGE.toString());
+            coins.getMessenger().sendMessage(sender, getDropCommand());
             lines++;
         }
         if (Permissions.hasCommandRemove(sender)) {
-            sender.sendMessage(Message.REMOVE_USAGE.toString());
+            coins.getMessenger().sendMessage(
+                sender, Component.text("/coins remove [%s|all]".formatted(Language.WORD_RADIUS), ColorResolver.VAR)
+            );
             lines++;
         }
         if (Permissions.hasCommandSettings(sender)) {
-            sender.sendMessage(Message.SETTINGS_USAGE.toString());
+            coins.getMessenger().sendMessage(
+                sender, Component.text("/coins settings [%s]".formatted(Language.WORD_PAGE), ColorResolver.VAR)
+            );
             lines++;
         }
         if (Permissions.hasCommandReload(sender)) {
-            sender.sendMessage(Message.RELOAD_USAGE.toString());
+            coins.getMessenger().sendMessage(sender, Component.text("/coins reload", ColorResolver.VAR));
             lines++;
         }
         if (Permissions.hasCommandVersion(sender)) {
-            sender.sendMessage(Message.VERSION_CHECK.toString());
+            coins.getMessenger().sendMessage(sender, Component.text("/coins version", ColorResolver.VAR));
             lines++;
         }
         if (Permissions.hasCommandToggle(sender)) {
-            sender.sendMessage(Message.TOGGLE_USAGE.toString());
-            lines++;
-        }
-        if (Config.ENABLE_WITHDRAW && Permissions.hasWithdraw(sender)) {
-            sender.sendMessage(Message.WITHDRAW_USAGE.toString());
+            coins.getMessenger().sendMessage(sender, Component.text("/coins toggle", ColorResolver.VAR));
             lines++;
         }
 
+        // if player has no permission for any of the commands
         if (lines == 0) {
             coins.getMessenger().sendMessage(sender, Component.text(coins.getDescription().getDescription(), ColorResolver.PRIMARY));
-            coins.getMessenger().sendMessage(sender,
-                Component.text(coins.getDescription().getWebsite(), NamedTextColor.BLUE)
-                    .clickEvent(ClickEvent.openUrl(coins.getDescription().getWebsite()))
-            );
+            coins.getMessenger().sendMessage(sender, coins.getSettings().getPluginUrl());
         }
     }
 

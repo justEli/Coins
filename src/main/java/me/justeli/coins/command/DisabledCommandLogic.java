@@ -1,11 +1,9 @@
 package me.justeli.coins.command;
 
 import me.justeli.coins.Coins;
-import me.justeli.coins.config.Message;
-import me.justeli.coins.config.MessagePosition;
-import me.justeli.coins.util.Util;
+import me.justeli.coins.language.Language;
+import me.justeli.coins.util.ColorResolver;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,9 +18,9 @@ public abstract class DisabledCommandLogic {
     }
 
     public void executeCommand(@NotNull CommandSender sender) {
-        sender.sendMessage(Message.DISABLED_REASONS.toString());
+        coins.getMessenger().sendMessage(sender, Language.COMMAND_DISABLED);
         for (String message : coins.getDisabledReasons()) {
-            coins.getMessenger().sendMessage(sender, Component.text("- " + message, NamedTextColor.RED));
+            coins.getMessenger().sendMessage(sender, Component.text("- " + message, ColorResolver.ERROR));
         }
     }
 }

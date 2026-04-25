@@ -2,7 +2,9 @@ package me.justeli.coins.command;
 
 import me.justeli.coins.Coins;
 import me.justeli.coins.config.Config;
-import me.justeli.coins.config.Message;
+import me.justeli.coins.language.EntryReplacement;
+import me.justeli.coins.language.Language;
+import me.justeli.coins.util.ColorResolver;
 import me.justeli.coins.util.ComponentUtil;
 import me.justeli.coins.util.Permissions;
 import me.justeli.coins.util.Util;
@@ -24,59 +26,77 @@ public abstract class WithdrawCommandLogic {
         this.coins = coins;
     }
 
+    private static final EntryReplacement FILL_TYPE = new EntryReplacement("type");
+    private static final EntryReplacement FILL_MIN = new EntryReplacement("min");
+    private static final EntryReplacement FILL_MAX = new EntryReplacement("max");
+
+    private static final EntryReplacement FILL_CURRENCY = new EntryReplacement("currency", ColorResolver.MONEY);
+    private static final EntryReplacement FILL_AMOUNT = new EntryReplacement("amount", ColorResolver.MONEY);
+
     public void executeCommand(@NotNull CommandSender sender, @NotNull String[] args) {
-        if (coins.isDisabled()) {
-            sender.sendMessage(Message.COINS_DISABLED.toString());
+        if (!Permissions.hasWithdraw(sender) || !(sender instanceof Player player)) {
+            coins.getMessenger().sendMessage(sender, Language.COMMAND_NO_PERMISSION);
+            return;
+        }
+
+        if (coins.isDisabled() || Util.isDisabledHere(player.getWorld())) {
+            coins.getMessenger().sendMessage(sender, Language.GENERAL_DISABLED);
             return;
         }
 
         if (!Config.ENABLE_WITHDRAW) {
-            sender.sendMessage(Message.WITHDRAWING_DISABLED.toString());
-            return;
-        }
-
-        if (!Permissions.hasWithdraw(sender) || !(sender instanceof Player player)) {
-            coins.getMessenger().sendNoPermission(sender);
-            return;
-        }
-
-        if (Util.isDisabledHere(player.getWorld())) {
-            sender.sendMessage(Message.COINS_DISABLED.toString());
+            coins.getMessenger().sendMessage(sender, Language.WITHDRAW_DISABLED);
             return;
         }
 
         if (player.getInventory().firstEmpty() == -1) {
-            player.sendMessage(Message.INVENTORY_FULL.toString());
+            coins.getMessenger().sendMessage(sender, Language.WITHDRAW_FULL_INVENTORY);
             return;
         }
 
         if (args.length == 0) {
-            player.sendMessage(Message.WITHDRAW_USAGE.toString());
+            coins.getMessenger().sendMessage(sender, Component.text("/withdraw <%s> [%s]".formatted(
+                Language.WORD_VALUE, Language.WORD_AMOUNT
+            ), ColorResolver.VAR));
+            coins.getMessenger().sendMessage(sender, Language.WITHDRAW_USAGE);
             return;
         }
 
         double worth = Util.toRoundedMoneyDecimals(Util.parseDouble(args[0]).orElse(0D));
+        if (worth <= 0 || worth > Config.MAX_WITHDRAW_AMOUNT) {
+            coins.getMessenger().sendMessage(sender, Language.COMMAND_INVALID_RANGE.with(
+                FILL_TYPE.filled(Language.WORD_VALUE), FILL_MIN.filled(0), FILL_MAX.filled(Config.MAX_WITHDRAW_AMOUNT)
+            ));
+            return;
+        }
+
         int amount = args.length >= 2? Util.parseInt(args[1]).orElse(0) : 1;
         double total = worth * amount;
-
-        if (worth <= 0 || amount < 1 || total <= 0 || amount > 64) {
-            sender.sendMessage(Message.INVALID_AMOUNT.toString());
+        if (amount < 1 || total <= 0 || amount > 64) {
+            coins.getMessenger().sendMessage(sender, Language.COMMAND_INVALID_RANGE.with(
+                FILL_TYPE.filled(Language.WORD_AMOUNT), FILL_MIN.filled(1), FILL_MAX.filled(64)
+            ));
             return;
         }
 
-        if (worth > Config.MAX_WITHDRAW_AMOUNT) {
-            player.sendMessage(Message.NOT_THAT_MUCH.toString());
-            return;
-        }
+        coins.getEconomy().balance(player.getUniqueId(), balance -> {
+            coins.getEconomy().canAfford(player.getUniqueId(), total, canAfford -> {
+                if (!canAfford) {
+                    coins.getMessenger().sendMessage(sender, Language.COMMAND_INVALID_RANGE.with(
+                        FILL_TYPE.filled(Language.WORD_VALUE), FILL_MIN.filled(0), FILL_MAX.filled(balance)
+                    ));
+                    return;
+                }
 
-        coins.getEconomy().canAfford(player.getUniqueId(), total, canAfford -> {
-            if (canAfford) {
                 coins.getEconomy().withdraw(player.getUniqueId(), total, () -> {
                     ItemStack coin = coins.getCreateCoin().createWithdrawn(worth);
                     coin.setAmount(amount);
 
                     player.getInventory().addItem(coin);
-                    player.sendMessage(Message.WITHDRAW_COINS.replace(Util.toFormattedMoneyDecimals(total)));
+                    coins.getMessenger().sendMessage(sender, Language.WITHDRAW_WITHDREW.with(
+                        FILL_CURRENCY.filled(Config.CURRENCY_SYMBOL),
+                        FILL_AMOUNT.filled(Util.toFormattedMoneyDecimals(total))
+                    ));
 
                     if (!Config.WITHDRAW_MESSAGE.equals(Component.empty())) {
                         coins.getMessenger().sendMessage(
@@ -85,22 +105,16 @@ public abstract class WithdrawCommandLogic {
                         );
                     }
                 });
-            }
-            else {
-                player.sendMessage(Message.NOT_THAT_MUCH.toString());
-            }
+            });
         });
     }
 
-    private static final List<String> VALUE_ARGUMENT = List.of("<value>"); // todo language
-    private static final List<String> AMOUNT_ARGUMENT = List.of("[amount]");
-
     public List<String> getTabCompletions(@NotNull String[] args) {
-        if (args.length == 1) {
-            return VALUE_ARGUMENT;
+        if (args.length <= 1) {
+            return List.of("[%s]".formatted(Language.WORD_VALUE));
         }
         else if (args.length == 2) {
-            return AMOUNT_ARGUMENT;
+            return List.of("[%s]".formatted(Language.WORD_AMOUNT));
         }
         return List.of();
     }

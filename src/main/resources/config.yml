@@ -30,11 +30,9 @@
 # Show a message to update the plugin on start-up, if the plugin is outdated.
 check-for-updates: true
 
-# What language should the plugin use? And what is your server's currency symbol? All
-#  available languages can be found in the folder 'languages' inside the plugin folder.
-#  Included languages by default: English, Dutch, German, French, Spanish, Swedish,
-#  Italian, Chinese, Hungarian, Russian and Turkish.
-language: 'English'
+# What language should the plugin use? All available languages can be found in the folder
+#  'locale' inside the plugin folder. And what is your server's currency symbol?
+locale: 'en-US'
 currency-symbol: '$'
 
 # This message is sent as action bar (bottom of a player's screen) by default, telling the

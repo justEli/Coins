@@ -44,7 +44,7 @@ import java.util.logging.Level;
  * @since December 13, 2016 (creation)
  */
 public final class Coins extends JavaPlugin {
-    private static final ExecutorService ASYNC_THREAD = Executors.newSingleThreadExecutor();
+    public static final ExecutorService EXECUTOR = Executors.newVirtualThreadPerTaskExecutor();
 
     @Override
     public void onEnable() {
@@ -76,10 +76,9 @@ public final class Coins extends JavaPlugin {
 
         // plugin version checker and metrics
         this.versionCheck = new VersionCheck(this);
-        ASYNC_THREAD.submit(() -> {
-            versionCheck.checkVersion();
-            new Metrics(this);
-        });
+        EXECUTOR.submit(() -> versionCheck.checkVersion());
+
+        var metrics = new Metrics(this);
 
         // show disabled reasons if plugin can't function
         if (!disabledReasons.isEmpty()) {
@@ -93,6 +92,8 @@ public final class Coins extends JavaPlugin {
             line(Level.SEVERE);
             console(Level.SEVERE, "Plugin 'Coins' is now disabled, until the issues above are resolved.");
             line(Level.SEVERE);
+
+            EXECUTOR.submit(() -> metrics.register(true));
             return;
         }
 
@@ -146,6 +147,7 @@ public final class Coins extends JavaPlugin {
             new WithdrawCommandSpigot(this);
         }
 
+        EXECUTOR.submit(() -> metrics.register(false));
         console(Level.INFO, "Initialized in %,dms.".formatted(System.currentTimeMillis() - startMillis));
     }
 
