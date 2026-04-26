@@ -109,6 +109,7 @@ public final class Metrics {
             metrics.add("deathMessagePosition", () -> Config.DEATH_MESSAGE_POSITION.name().toLowerCase());
             metrics.add("usingOldColorCodes", () -> Settings.USING_OLD_COLOR_CODES);
             metrics.add("usingOldPlaceholders", () -> Settings.USING_OLD_PLACEHOLDERS);
+            metrics.add("migratedToLocale", () -> Settings.MIGRATED_TO_LOCALE);
 
             // mythicmobs
             metrics.add("usingMythicMobs", () -> coins.getServer().getPluginManager().isPluginEnabled("MythicMobs"));

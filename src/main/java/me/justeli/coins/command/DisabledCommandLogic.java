@@ -19,7 +19,7 @@ public abstract class DisabledCommandLogic {
 
     public void executeCommand(@NotNull CommandSender sender) {
         coins.getMessenger().sendMessage(sender, Language.COMMAND_DISABLED);
-        for (String message : coins.getDisabledReasons()) {
+        for (String message : coins.getProblems()) {
             coins.getMessenger().sendMessage(sender, Component.text("- " + message, ColorResolver.ERROR));
         }
     }

@@ -89,23 +89,15 @@ public final class Settings {
 
     /// reload all settings
     public void reload() {
-        if (!coins.getDisabledReasons().isEmpty()) {
-            coins.line(Level.SEVERE);
-            coins.console(Level.SEVERE,
-                "Plugin 'Coins' is disabled, until issues are fixed and the server is rebooted (see start-up log of Coins)."
-            );
-            coins.line(Level.SEVERE);
-            return;
-        }
-
         resetMultiplier();
         resetWarningCount();
         parseConfig();
         reloadLanguage();
 
+        coins.hasProblemsAndPrint(); // should not happen, but just in case
         if (warnings != 0) {
-            coins.console(Level.WARNING,
-                "Loaded the config of Coins with %d warnings. Check above here for details.".formatted(warnings)
+            coins.console(Level.WARNING, """
+                Loaded the config of Coins with %d warnings. See above here for details.""".formatted(warnings)
             );
         }
     }
@@ -124,6 +116,7 @@ public final class Settings {
     public static boolean USING_OLD_COLOR_CODES = false; // from before Coins v1.16 (April 2026)
     public static boolean USING_LEGACY_KEYS = false; // from before Coins v1.12 (Feb 2022)
     public static boolean USING_OLD_PLACEHOLDERS = false; // from a very old Coins version
+    public static boolean MIGRATED_TO_LOCALE = true; // from before Coins v1.16 (April 2026)
 
     private static final Converter<String, String> LEGACY_CONVERTER =
         CaseFormat.LOWER_HYPHEN.converterTo(CaseFormat.LOWER_CAMEL);
@@ -156,8 +149,9 @@ public final class Settings {
 
                 if (configKey == null || !config.contains(configKey)) {
                     if (configEntry.required()) {
-                        String prefixSuffix = field.getType() == String.class? "'" : "";
-                        Object defaultValue = prefixSuffix + field.get(Config.class) + prefixSuffix;
+                        String suffix = field.getType() == String.class? "'" : "";
+                        String value = field.get(Config.class).toString();
+                        String defaultValue = suffix + value + suffix;
                         showWarning("""
                             Config is missing `%s`. Using its default value '%s' now.%s Consider adding this to the config:
                             ----------------------------------------
@@ -165,12 +159,21 @@ public final class Settings {
                             ----------------------------------------"""
                             .formatted(
                                 configKey,
-                                defaultValue,
+                                value,
                                 configEntry.motivation().isEmpty()? "" : " %s".formatted(configEntry.motivation()),
                                 configEntry.value().replace(".", ":\n  "),
                                 defaultValue
                             )
                         );
+
+                        // deprecated in Coins v1.16 (April 2026)
+                        if ("locale".equals(configEntry.value())) {
+                            MIGRATED_TO_LOCALE = false;
+                        }
+                    }
+                    else if ("language".equals(configKey)) {
+                        // config has no 'language' key in config, so reset it to ""
+                        Config.LANGUAGE = ""; // deprecated in Coins v1.16 (April 2026)
                     }
                     continue;
                 }
@@ -281,7 +284,7 @@ public final class Settings {
                 try {
                     Object defaultValue = field.get(Config.class);
                     showWarning("""
-                        Config file has wrong value at `%s`. Using its default value now (%s)."""
+                        Config file has wrong value at `%s`. Using its default value '%s' now."""
                         .formatted(configEntry.value(), defaultValue)
                     );
                 }
@@ -320,13 +323,19 @@ public final class Settings {
         DECIMAL_FORMATTER = new DecimalFormat("#" + groupSeparator + "##0." + decimals, formatSymbols);
     }
 
+    private <T extends Keyed> Optional<T> getType(String type, Registry<T> registry) {
+        var key = NamespacedKey.fromString(type);
+        if (key == null) {
+            return Optional.empty();
+        }
+
+        return Optional.ofNullable(registry.get(key));
+    }
+
     private Optional<Material> getMaterial(String name, String configKey) {
-        var key = NamespacedKey.fromString(name);
-        if (key != null) {
-            var type = Registry.MATERIAL.get(key);
-            if (type != null) {
-                return Optional.of(type);
-            }
+        var type = getType(name, Registry.MATERIAL);
+        if (type.isPresent()) {
+            return type;
         }
 
         Material material = Material.matchMaterial(name.replace(" ", "_").toUpperCase().replace("COIN", "SUNFLOWER"));
@@ -363,23 +372,20 @@ public final class Settings {
     }
 
     private Optional<EntityType> getEntityType(String name, String configKey) {
-        var key = NamespacedKey.fromString(name);
-        if (key != null) {
-            var type = Registry.ENTITY_TYPE.get(key);
-            if (type != null) {
-                return Optional.of(type);
-            }
+        var type = getType(name, Registry.ENTITY_TYPE);
+        if (type.isPresent()) {
+            return type;
         }
 
         try {
             // deprecated in Coins v1.16 (April 2026)
-            EntityType type = EntityType.valueOf(name.replace(" ", "_").toUpperCase());
+            EntityType entityType = EntityType.valueOf(name.replace(" ", "_").toUpperCase());
             showWarning("""
                 Found an outdated entity type '%s' in the config at `%s`. Change this to its namespaced key '%s'. \
                 Support for outdated entity types will be removed in a future release."""
-                .formatted(name, configKey, type.getKey().toString())
+                .formatted(name, configKey, entityType.getKey().toString())
             );
-            return Optional.of(type);
+            return Optional.of(entityType);
         }
         catch (IllegalArgumentException exception) {
             showWarning("""
@@ -676,14 +682,15 @@ public final class Settings {
         if (!Config.LANGUAGE.isEmpty()) {
             // support dropped since Coins v1.16 (April 2026)
             showWarning("""
-                Language '%s' is no longer supported. Please add `locale: 'en-US'` to the config. Language \
-                handling has been completely rewritten, sorry for the inconvenience. Please see the 'locale' folder \
+                Language '%s' is no longer supported. Please add `locale: 'en-US'` to the config, and remove `language`. \
+                Language handling has been completely rewritten, sorry for the inconvenience. Please see the 'locale' folder \
                 of the plugin to find locales to use, or create your own.""".formatted(Config.LANGUAGE)
             );
+            MIGRATED_TO_LOCALE = false;
         }
 
         createLocale(Config.LOCALE, true);
-        coins.console(Level.INFO, "Language entries from 'locale/%s.json' have been loaded.".formatted(Config.LOCALE));
+        coins.console(Level.INFO, "Language from 'locale/%s.json' has been loaded.".formatted(Config.LOCALE));
     }
 
     // warnings in settings

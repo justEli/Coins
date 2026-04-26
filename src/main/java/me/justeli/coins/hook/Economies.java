@@ -56,7 +56,7 @@ public final class Economies implements EconomyHook {
             missingPlugins.add("an economy providing plugin for '" + name + "'");
         }
         else {
-            plugin.getLogger().log(Level.INFO, name + " is used as the economy provider.");
+            plugin.getLogger().log(Level.INFO, "Using '%s' as the economy provider.".formatted(name));
             missingPlugins.clear();
         }
     }

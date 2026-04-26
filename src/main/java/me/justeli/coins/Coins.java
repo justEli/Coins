@@ -49,16 +49,20 @@ public final class Coins extends JavaPlugin {
     @Override
     public void onEnable() {
         long startMillis = System.currentTimeMillis();
+
+        // parse settings
+        this.settings = new Settings(this);
+
+        // check some compatibility
         if (VersionUtil.getMinecraftVersion() < 21) {
-            disablePlugin("Coins only supports Minecraft version 1.21 and newer.");
+            addProblem("Coins only supports Minecraft version 1.21 and newer.");
         }
 
         if (VersionUtil.getPlatform() == VersionUtil.Platform.BUKKIT) {
-            disablePlugin("""
+            addProblem("""
                 You seem to be using Bukkit, but the plugin Coins requires at least Spigot! Please use Spigot, Paper, \
                 or Folia. Moving from Bukkit to Spigot will NOT cause any problems with other plugins, since Spigot \
-                only adds more features to Bukkit.
-                """
+                only adds more features to Bukkit."""
             );
         }
 
@@ -69,8 +73,8 @@ public final class Coins extends JavaPlugin {
         // economy provider
         this.economy = new Economies(this);
         if (!economy.getMissingPluginNames().isEmpty()) {
-            for (var missing : economy.getMissingPluginNames()) {
-                disablePlugin("There is no proper economy installed. Please install %s.".formatted(missing));
+            for (String missing : economy.getMissingPluginNames()) {
+                addProblem("There is no proper economy installed. Please install %s.".formatted(missing));
             }
         }
 
@@ -80,18 +84,14 @@ public final class Coins extends JavaPlugin {
 
         var metrics = new Metrics(this);
 
-        // show disabled reasons if plugin can't function
-        if (!disabledReasons.isEmpty()) {
+        // show problems if plugin can't function
+        if (hasProblemsAndPrint()) {
             if (VersionUtil.isPlatformAtLeast(VersionUtil.Platform.PAPER)) {
                 new DisabledCommandPaper(this);
             }
             else {
                 new DisabledCommandSpigot(this);
             }
-
-            line(Level.SEVERE);
-            console(Level.SEVERE, "Plugin 'Coins' is now disabled, until the issues above are resolved.");
-            line(Level.SEVERE);
 
             EXECUTOR.submit(() -> metrics.register(true));
             return;
@@ -100,22 +100,18 @@ public final class Coins extends JavaPlugin {
         // mythicmobs integration
         if (getServer().getPluginManager().isPluginEnabled("MythicMobs")) {
             try {
-                if (getServer().getPluginManager().getPlugin("MythicMobs") != null) {
-                    new MythicMobsHook(this);
-                }
+                new MythicMobsHook(this);
             }
             catch (Exception | NoClassDefFoundError | InstantiationError exception) {
                 console(Level.WARNING, """
-                    Detected MythicMobs, but the version of MythicMobs you are using \
-                    is not supported. If this is a newer version, please contact \
-                    support of Coins: https://plugin.coins.community/discord
+                    Detected MythicMobs, but the version of MythicMobs you are using is not supported. If this is a newer \
+                    version, please contact support of Coins: https://plugin.coins.community/discord
                     """
                 );
             }
         }
 
-        // initialize everything if there are no errors
-        this.settings = new Settings(this);
+        // initialize coin basics
         this.baseCoin = new BaseCoin(this);
         this.coinMeta = new CoinMeta(this);
         this.createCoin = new CreateCoin(this);
@@ -156,7 +152,7 @@ public final class Coins extends JavaPlugin {
     }
 
     public void line(Level type) {
-        console(type, "------------------------------------------------------------------");
+        console(type, "--------------------------------------------------------------------");
     }
 
     public void console(Level type, String message) {
@@ -171,16 +167,30 @@ public final class Coins extends JavaPlugin {
 
     // plugin disablement
 
-    private final List<String> disabledReasons = new ArrayList<>();
+    private final List<String> problems = new ArrayList<>();
 
-    public List<String> getDisabledReasons() {
-        return disabledReasons;
+    public List<String> getProblems() {
+        return problems;
     }
 
-    private void disablePlugin(String reason) {
+    private void addProblem(String reason) {
+        problems.add(reason);
+    }
+
+    public boolean hasProblemsAndPrint() {
+        if (problems.isEmpty()) {
+            return false;
+        }
+
         line(Level.SEVERE);
-        console(Level.SEVERE, reason);
-        disabledReasons.add(reason);
+        console(Level.SEVERE, "Plugin 'Coins' is disabled until the following issues are resolved:");
+
+        for (String reason : problems) {
+            console(Level.SEVERE, "- %s".formatted(reason));
+        }
+
+        line(Level.SEVERE);
+        return true;
     }
 
     private boolean pluginDisabled = false;
