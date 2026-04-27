@@ -2,6 +2,9 @@ package me.justeli.coins.language;
 
 import net.kyori.adventure.text.Component;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * a language entry that gets parsed to mini-message and can be filled with replacements
  * @author Eli
@@ -16,13 +19,16 @@ public final class FillEntry extends FormatEntry {
         return new FillEntry(message);
     }
 
-    public Component with(EntryReplacement.Filled... replacements) {
-        Component target = component;
-        for (EntryReplacement.Filled replacement : replacements) {
-            target = target.replaceText(builder ->
-                builder.matchLiteral("{" + replacement.getIdentifier() + "}").replacement(replacement.getReplacement())
-            );
+    public Component with(EntryReplacement.Filled... fillings) {
+        Map<String, Component> replacements = new HashMap<>();
+        for (EntryReplacement.Filled replacement : fillings) {
+            replacements.put(replacement.getIdentifier(), replacement.getReplacement());
         }
-        return target;
+
+        return component.replaceText(builder ->
+            builder.match("\\{([^}]+)}").replacement((match, original) ->
+                replacements.getOrDefault(match.group(1), original.build())
+            )
+        );
     }
 }
