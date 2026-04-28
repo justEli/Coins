@@ -16,7 +16,7 @@ import java.util.List;
 public final class Permissions {
     private static boolean hasOldPermission(CommandSender sender, String outdated, String updated) {
         if (sender.hasPermission(outdated)) {
-            Bukkit.getServer().getLogger().warning(
+            Bukkit.getLogger().warning(
                 "You are using the outdated permission '%s'. Please use '%s' instead. The used permission may be removed in the future.".formatted(outdated, updated)
             );
             return true;
