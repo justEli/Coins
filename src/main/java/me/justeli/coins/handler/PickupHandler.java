@@ -3,7 +3,7 @@ package me.justeli.coins.handler;
 import me.justeli.coins.Coins;
 import me.justeli.coins.event.PickupEvent;
 import me.justeli.coins.config.Config;
-import me.justeli.coins.util.ComponentUtil;
+import me.justeli.coins.component.ComponentUtil;
 import me.justeli.coins.util.Permissions;
 import me.justeli.coins.util.Util;
 import net.kyori.adventure.text.Component;

@@ -1,6 +1,6 @@
 package me.justeli.coins.language;
 
-import me.justeli.coins.util.ColorResolver;
+import me.justeli.coins.component.ColorResolver;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 

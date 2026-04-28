@@ -1,9 +1,10 @@
-package me.justeli.coins.util;
+package me.justeli.coins.component;
 
 import me.justeli.coins.Coins;
 import me.justeli.coins.config.MessagePosition;
 import me.justeli.coins.language.FormatEntry;
 import me.justeli.coins.language.Language;
+import me.justeli.coins.util.VersionUtil;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;

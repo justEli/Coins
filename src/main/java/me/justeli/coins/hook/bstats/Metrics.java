@@ -3,7 +3,7 @@ package me.justeli.coins.hook.bstats;
 import me.justeli.coins.Coins;
 import me.justeli.coins.config.Config;
 import me.justeli.coins.config.Settings;
-import me.justeli.coins.util.ComponentUtil;
+import me.justeli.coins.component.ComponentUtil;
 import org.bstats.charts.SimplePie;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;

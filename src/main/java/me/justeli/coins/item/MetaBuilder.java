@@ -1,7 +1,7 @@
 package me.justeli.coins.item;
 
 import me.justeli.coins.Coins;
-import me.justeli.coins.util.ComponentUtil;
+import me.justeli.coins.component.ComponentUtil;
 import me.justeli.coins.util.VersionUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;

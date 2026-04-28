@@ -6,7 +6,7 @@ import me.justeli.coins.event.EntityCoinDropEvent;
 import me.justeli.coins.item.CoinMeta;
 import me.justeli.coins.util.BlockCache;
 import me.justeli.coins.util.BlockPosition;
-import me.justeli.coins.util.ComponentUtil;
+import me.justeli.coins.component.ComponentUtil;
 import me.justeli.coins.util.Permissions;
 import me.justeli.coins.util.Util;
 import org.bukkit.GameMode;

@@ -2,7 +2,7 @@ package me.justeli.coins.command;
 
 import me.justeli.coins.Coins;
 import me.justeli.coins.language.Language;
-import me.justeli.coins.util.ColorResolver;
+import me.justeli.coins.component.ColorResolver;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;

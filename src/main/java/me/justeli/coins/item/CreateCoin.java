@@ -2,7 +2,7 @@ package me.justeli.coins.item;
 
 import me.justeli.coins.Coins;
 import me.justeli.coins.config.Config;
-import me.justeli.coins.util.ComponentUtil;
+import me.justeli.coins.component.ComponentUtil;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 

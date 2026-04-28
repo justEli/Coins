@@ -1,4 +1,4 @@
-package me.justeli.coins.util;
+package me.justeli.coins.component;
 
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.Context;
@@ -19,12 +19,13 @@ import java.util.Map;
 public final class ColorResolver implements TagResolver {
     private static final Map<String, TextColor> KEYS = new HashMap<>();
 
-    // https://coolors.co/bf1111-ff0000-ff7711-ffc430-ffcc88-6dd47e-148c30-95a5a6
-    public static final TextColor DOWN = TextColor.color(0xBF1111); // todo should be configurable imo
-    public static final TextColor ERROR = TextColor.color(0xFF0000);
-    public static final TextColor PRIMARY = TextColor.color(0xFF7711);
+    // https://coolors.co/bf1111-ff0f0f-ff961f-ffc430-ffdcad-6dd47e-148c30-95a5a6
+    // todo should be configurable imo
+    public static final TextColor DOWN = TextColor.color(0xBF1111);
+    public static final TextColor ERROR = TextColor.color(0xFF0F0F);
+    public static final TextColor PRIMARY = TextColor.color(0xFF961F);
     public static final TextColor COINS = TextColor.color(0xFFC430);
-    public static final TextColor VAR = TextColor.color(0xFFCC88);
+    public static final TextColor VAR = TextColor.color(0xFFDCAD);
     public static final TextColor MONEY = TextColor.color(0x6DD47E);
     public static final TextColor UP = TextColor.color(0x148C30);
     public static final TextColor USER = TextColor.color(0x95A5A6);

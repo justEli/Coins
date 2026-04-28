@@ -24,7 +24,7 @@ import me.justeli.coins.hook.Economies;
 import me.justeli.coins.item.CoinMeta;
 import me.justeli.coins.item.CreateCoin;
 import me.justeli.coins.item.MetaBuilder;
-import me.justeli.coins.util.Messenger;
+import me.justeli.coins.component.Messenger;
 import me.justeli.coins.util.VersionCheck;
 import me.justeli.coins.util.Scheduler;
 import me.justeli.coins.util.VersionUtil;

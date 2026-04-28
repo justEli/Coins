@@ -1,6 +1,7 @@
-package me.justeli.coins.util;
+package me.justeli.coins.component;
 
 import me.justeli.coins.config.Config;
+import me.justeli.coins.util.Util;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;

@@ -5,7 +5,7 @@ import me.justeli.coins.config.Config;
 import me.justeli.coins.language.EntryReplacement;
 import me.justeli.coins.language.Language;
 import me.justeli.coins.item.CoinMeta;
-import me.justeli.coins.util.ColorResolver;
+import me.justeli.coins.component.ColorResolver;
 import me.justeli.coins.util.Permissions;
 import me.justeli.coins.util.VersionPlugin;
 import me.justeli.coins.util.Util;
