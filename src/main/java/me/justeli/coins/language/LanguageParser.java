@@ -51,6 +51,7 @@ public final class LanguageParser {
     // - it-IT  2026/04  spigot=peppe73.693388
     // - sv-SE  2026/04  discord=k4rlus.221730501315002368
     // - zh-CN  2026/04  spigot=chenxuuu.325888, github=chenxuuu
+    // - de-DE  2026/04  discord=amooseatesagan.393850636149587970
     // - he-IL  2026/04  discord=leom3565.768085724410413096
     // - ru-RU  2026/04  spigot=allfire0.1632755, discord=allf1re.1135600549283246220
 
