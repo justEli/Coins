@@ -20,7 +20,7 @@
   "command.withdraw.disabled": "<error>本服务器已禁用硬币提款功能。",
   "command.withdraw.full_inventory": "<error>无法提款，因为你的背包已满。",
   "command.withdraw.usage": "提取余额中的金钱，并转换为实体硬币。",
-  "command.withdraw.withdrew": "已从余额中提取 {currency}{amount} ，并转换为实体硬币。",
+  "command.withdraw.withdrew": "已从余额中提取 {currency}{amount}，并转换为实体硬币。",
   "general.disabled": "<error>当前世界已禁用 Coins 功能。",
   "page.not_found": "<error>指定的页码无内容。",
   "word.amount": "数量",
