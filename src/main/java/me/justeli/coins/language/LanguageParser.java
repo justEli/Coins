@@ -159,7 +159,7 @@ public final class LanguageParser {
     }
 
     private static @NotNull String toValidLocale(@NotNull String locale) {
-        var parts = locale.split("[ -_]");
+        var parts = locale.split("[ _-]");
         if (parts.length == 1) {
             String modified = parts[0].toLowerCase();
             if (LOCALE_PATTERN.matcher(modified).matches()) {
