@@ -101,7 +101,7 @@ public class Config {
     public static MessagePosition PICKUP_MESSAGE_POSITION = MessagePosition.ACTIONBAR;
 
     @ConfigEntry("withdraw-message")
-    public static Component WITHDRAW_MESSAGE = ComponentUtil.parse("<down>↓ <money>{currency}{amount}");
+    public static Component WITHDRAW_MESSAGE = ComponentUtil.parse("<coins>→ <money>{currency}{amount}");
 
     @ConfigEntry("withdraw-message-position")
     public static MessagePosition WITHDRAW_MESSAGE_POSITION = MessagePosition.ACTIONBAR;
@@ -137,28 +137,28 @@ public class Config {
     public static Component WITHDRAWN_COIN_NAME_PLURAL = ComponentUtil.parse("<var>{amount} <coins>Coins");
 
     @ConfigEntry("drop-chance")
-    public static Double DROP_CHANCE = 0.9;
+    public static Double DROP_CHANCE = 0.90;
 
     @ConfigEntry("max-withdraw-amount")
-    public static Double MAX_WITHDRAW_AMOUNT = 10000.0;
+    public static Double MAX_WITHDRAW_AMOUNT = 10000.00;
 
     @ConfigEntry("money-amount.from")
-    public static Double MONEY_AMOUNT_FROM = 3.0;
+    public static Double MONEY_AMOUNT_FROM = 3.00;
 
     @ConfigEntry("money-amount.to")
-    public static Double MONEY_AMOUNT_TO = 7.0;
+    public static Double MONEY_AMOUNT_TO = 7.00;
 
     @ConfigEntry("money-taken.from")
-    public static Double MONEY_TAKEN_FROM = 10.0;
+    public static Double MONEY_TAKEN_FROM = 10.00;
 
     @ConfigEntry("money-taken.to")
-    public static Double MONEY_TAKEN_TO = 30.0;
+    public static Double MONEY_TAKEN_TO = 30.00;
 
     @ConfigEntry("mine-percentage")
-    public static Double MINE_PERCENTAGE = 0.3;
+    public static Double MINE_PERCENTAGE = 0.20;
 
     @ConfigEntry("percentage-player-hit")
-    public static Double PERCENTAGE_PLAYER_HIT = 0.8;
+    public static Double PERCENTAGE_PLAYER_HIT = 0.80;
 
     @ConfigEntry("enchant-increment")
     public static Double ENCHANT_INCREMENT = 0.05;
@@ -167,10 +167,10 @@ public class Config {
     public static Double LOCATION_LIMIT_HOURS = 1.0;
 
     @ConfigEntry("sound-pitch")
-    public static Float SOUND_PITCH = 0.3F;
+    public static Float SOUND_PITCH = 0.30F;
 
     @ConfigEntry("sound-volume")
-    public static Float SOUND_VOLUME = 0.5F;
+    public static Float SOUND_VOLUME = 0.50F;
 
     @ConfigEntry("money-decimals")
     public static Integer MONEY_DECIMALS = 2;
