@@ -245,17 +245,35 @@ public final class LanguageParser {
         }
     }
 
-    private void parseLanguage() throws IOException {
-        if (!Config.LANGUAGE.isEmpty()) {
-            // support dropped since Coins v1.16 (April 2026)
-            settings.showWarning("""
-                Language '%s' is no longer supported. Please add `locale: 'en-US'` to the config, and remove `language`. \
-                Language handling has been completely rewritten, sorry for the inconvenience. Please see the 'locale' folder \
-                of the plugin to find locales to use, or create your own.""".formatted(Config.LANGUAGE)
-            );
-            Settings.MIGRATED_TO_LOCALE = false;
+    private void doLegacyCheck() {
+        if (Config.LANGUAGE.isEmpty()) {
+            return;
         }
 
+        String previous = Config.LANGUAGE.toLowerCase();
+        String converted;
+        if (previous.contains("ger")) converted = "de-DE";
+        else if (previous.contains("span")) converted = "es-ES";
+        else if (previous.contains("ital")) converted = "it-IT";
+        else if (previous.contains("french")) converted = "fr-FR";
+        else if (previous.contains("dutch")) converted = "nl-NL";
+        else if (previous.contains("rus")) converted = "ru-RU";
+        else if (previous.contains("swed")) converted = "sv-SE";
+        else if (previous.contains("viet")) converted = "vi-VN";
+        else if (previous.contains("chin")) converted = "zh-CN";
+        else converted = "en-US";
+
+        // support dropped since Coins v1.16 (April 2026)
+        settings.showWarning("""
+                Language '%s' is no longer supported. Please add `locale: '%s'` to the config, and remove `language`. \
+                Language handling has been completely rewritten, sorry for the inconvenience. Please see the 'locale' folder \
+                of the plugin to find locales to use, or create your own.""".formatted(Config.LANGUAGE, converted)
+        );
+        Settings.MIGRATED_TO_LOCALE = false;
+    }
+
+    private void parseLanguage() throws IOException {
+        doLegacyCheck();
         createLocale(Config.LOCALE, true);
         coins.console(Level.INFO, "Language from 'locale/%s.json' has been loaded.".formatted(Config.LOCALE));
     }
