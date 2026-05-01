@@ -55,6 +55,7 @@ public final class LanguageParser {
     // - fr-FR  2026/04  discord=tsunyfox.757702514543034508
     // - he-IL  2026/04  discord=leom3565.768085724410413096
     // - ru-RU  2026/04  spigot=allfire0.1632755, discord=allf1re.1135600549283246220
+    // - vi-VN  2026/04  discord=amooseatesagan.393850636149587970
 
     private static final String DEFAULT_LOCALE = "en-US";
     private static final Pattern LOCALE_PATTERN = Pattern.compile("^[a-z]{2}(-[A-Z]{2})?$");
