@@ -70,6 +70,10 @@ public final class Settings {
         return pluginUrl;
     }
 
+    public LanguageParser getLanguageParser() {
+        return languageParser;
+    }
+
     /// reload all settings
     public void reload() {
         resetMultiplier();

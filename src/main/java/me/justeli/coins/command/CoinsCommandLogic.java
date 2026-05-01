@@ -94,11 +94,11 @@ public abstract class CoinsCommandLogic {
             }
             case "lang", "language" -> {
                 if (checkPermission(sender, Permissions.hasCommandLanguage(sender))) {
-                     coins.getMessenger().sendHeader(sender, Language.WORD_LANGUAGE.getCapitalized());
-                    // TODO
-//                    for (Message message : Message.values()) {
-//                        sender.sendMessage(message.toString());
-//                    }
+                    int page = args.length > 1? Util.parseInt(args[1]).orElse(1) : 1;
+                    List<Component> entries = coins.getSettings().getLanguageParser().getEntries();
+                    coins.getMessenger().sendPage(
+                        sender, entries, page, 4, Language.WORD_LANGUAGE.getCapitalized(), "/coins language"
+                    );
                 }
             }
             case "version", "update" -> {
@@ -163,6 +163,9 @@ public abstract class CoinsCommandLogic {
             if (Permissions.hasCommandSettings(sender) && "settings".startsWith(remaining)) {
                 list.add("settings");
             }
+            if (Permissions.hasCommandLanguage(sender) && "language".startsWith(remaining)) {
+                list.add("language");
+            }
             if (Permissions.hasCommandVersion(sender) && "version".startsWith(remaining)) {
                 list.add("version");
             }
@@ -192,7 +195,9 @@ public abstract class CoinsCommandLogic {
                     list.add("<x,y,z,%s>".formatted(Language.WORD_WORLD));
                 }
             }
-            if (args[0].equalsIgnoreCase("settings") && Permissions.hasCommandSettings(sender)) {
+            boolean hasSettings = args[0].equalsIgnoreCase("settings") && Permissions.hasCommandSettings(sender);
+            boolean hasLanguage = args[0].equalsIgnoreCase("language") && Permissions.hasCommandLanguage(sender);
+            if (hasSettings || hasLanguage) {
                 for (int i = 1; i < 8; i++) {
                     list.add(Integer.toString(i));
                 }

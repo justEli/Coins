@@ -1,5 +1,7 @@
 package me.justeli.coins.language;
 
+import net.kyori.adventure.text.Component;
+
 /**
  * @author Eli
  * @since April 24, 2026
@@ -14,4 +16,6 @@ public abstract class Entry {
     public String toString() {
         return raw;
     }
+
+    public abstract Component getComponent();
 }

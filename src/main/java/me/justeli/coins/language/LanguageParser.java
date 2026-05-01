@@ -9,6 +9,7 @@ import com.google.gson.JsonParser;
 import me.justeli.coins.Coins;
 import me.justeli.coins.config.Config;
 import me.justeli.coins.config.Settings;
+import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -157,6 +158,25 @@ public final class LanguageParser {
                 .formatted(String.join("', '", downloadedLocales))
             );
         }
+    }
+
+    public List<Component> getEntries() {
+        List<Component> components = new ArrayList<>();
+        for (Field field : Language.class.getDeclaredFields()) {
+            if (!field.isAnnotationPresent(LanguageEntry.class)) {
+                continue;
+            }
+
+            try {
+                LanguageEntry languageEntry = field.getAnnotation(LanguageEntry.class);
+                if (field.get(Language.class) instanceof Entry entry) {
+                    var component = entry instanceof FillEntry fillEntry? fillEntry.with() : entry.getComponent();
+                    components.add(Component.text(languageEntry.value() + ":").appendNewline().append(component));
+                }
+            }
+            catch (Exception ignored) {}
+        }
+        return components;
     }
 
     private static @NotNull String toValidLocale(@NotNull String locale) {

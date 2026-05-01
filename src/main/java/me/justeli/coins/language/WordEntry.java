@@ -16,6 +16,7 @@ public final class WordEntry extends Entry {
         return new WordEntry(message);
     }
 
+    @Override
     public Component getComponent() {
         return Component.text(raw);
     }

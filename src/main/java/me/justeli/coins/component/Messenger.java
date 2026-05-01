@@ -76,7 +76,7 @@ public final class Messenger {
         return audience.sender(sender);
     }
 
-    private static final int PAGE_SIZE = 8;
+    private static final int DEFAULT_PAGE_SIZE = 8;
     private static final Sound PAGE_TURN = Sound.ITEM_BOOK_PAGE_TURN;
     private static final Component HEADER_LINE =
         Component.text("     ", NamedTextColor.DARK_GRAY, TextDecoration.STRIKETHROUGH);
@@ -100,13 +100,13 @@ public final class Messenger {
         sendMessage(sender, getHeader(title));
     }
 
-    private static List<Component> getPage(List<Component> allLines, int number) {
+    private static List<Component> getPage(List<Component> allLines, int number, int pageSize) {
         if (number <= 0) {
             return List.of();
         }
 
         List<Component> pages = new ArrayList<>();
-        for (int i = (number - 1) * PAGE_SIZE; i < number * PAGE_SIZE; i++) {
+        for (int i = (number - 1) * pageSize; i < number * pageSize; i++) {
             if (allLines.size() <= i) {
                 break;
             }
@@ -117,15 +117,19 @@ public final class Messenger {
         return pages;
     }
 
+    public void sendPage(CommandSender sender, List<Component> allLines, int pageNumber, @Nullable String title, String command) {
+        sendPage(sender, allLines, pageNumber, DEFAULT_PAGE_SIZE, title, command);
+    }
+
     /// @param pageNumber starts at 1
     /// @param command has to start with a slash
-    public void sendPage(CommandSender sender, List<Component> allLines, int pageNumber, @Nullable String title, String command) {
+    public void sendPage(CommandSender sender, List<Component> allLines, int pageNumber, int pageSize, @Nullable String title, String command) {
         if (pageNumber <= 0 || allLines.isEmpty()) {
             sendMessage(sender, Language.PAGE_NOT_FOUND);
             return;
         }
 
-        List<Component> pageLines = getPage(allLines, pageNumber);
+        List<Component> pageLines = getPage(allLines, pageNumber, pageSize);
         if (pageLines.isEmpty()) {
             sendMessage(sender, Language.PAGE_NOT_FOUND);
             return;
@@ -146,7 +150,7 @@ public final class Messenger {
             );
         }
 
-        int totalPages = allLines.size() / PAGE_SIZE + Math.min(allLines.size() % PAGE_SIZE, 1);
+        int totalPages = allLines.size() / pageSize + Math.min(allLines.size() % pageSize, 1);
         component.appendSpace().append(
             Component.empty()
                 .append(Component.text(pageNumber, NamedTextColor.GRAY))

@@ -1,5 +1,6 @@
 package me.justeli.coins.language;
 
+import me.justeli.coins.component.ColorResolver;
 import net.kyori.adventure.text.Component;
 
 import java.util.HashMap;
@@ -27,7 +28,7 @@ public final class FillEntry extends FormatEntry {
 
         return component.replaceText(builder ->
             builder.match("\\{([^}]+)}").replacement((match, original) ->
-                replacements.getOrDefault(match.group(1), original.build())
+                replacements.getOrDefault(match.group(1), original.color(ColorResolver.VAR).build())
             )
         );
     }

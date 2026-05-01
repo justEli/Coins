@@ -1,6 +1,7 @@
 package me.justeli.coins.language;
 
 import me.justeli.coins.component.ColorResolver;
+import me.justeli.coins.util.Util;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 
@@ -29,7 +30,8 @@ public final class EntryReplacement {
     public class Filled {
         private final Component replacement;
         public Filled(Object replacement) {
-            this.replacement = Component.text(replacement.toString(), color);
+            String value = replacement instanceof Double number? Util.toFormattedMoneyDecimals(number) : replacement.toString();
+            this.replacement = Component.text(value, color);
         }
 
         public String getIdentifier() {

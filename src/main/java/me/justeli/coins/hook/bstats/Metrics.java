@@ -8,6 +8,7 @@ import org.bstats.charts.SimplePie;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Locale;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 
@@ -38,7 +39,7 @@ public final class Metrics {
     }
 
     private static String toRounded(double value) {
-        return "%.2f".formatted(value);
+        return String.format(Locale.US, "%.2f", value);
     }
 
     private static String toPercentage(double amount) {

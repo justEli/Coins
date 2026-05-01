@@ -20,6 +20,7 @@ public class FormatEntry extends Entry {
         return new FormatEntry(message);
     }
 
+    @Override
     public Component getComponent() {
         return component;
     }
