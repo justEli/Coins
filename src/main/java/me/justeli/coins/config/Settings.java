@@ -61,7 +61,7 @@ public final class Settings {
 
     private @NotNull String getWebsite() {
         String website = coins.getDescription().getWebsite();
-        return website == null? "https://www.spigotmc.org/resources/coins.33382/" : website;
+        return website == null? "https://modrinth.com/plugin/coinsplugin" : website;
     }
 
     public static DecimalFormat DECIMAL_FORMATTER = new DecimalFormat();
