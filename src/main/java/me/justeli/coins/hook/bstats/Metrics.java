@@ -5,10 +5,12 @@ import me.justeli.coins.config.Config;
 import me.justeli.coins.config.Settings;
 import me.justeli.coins.component.ComponentUtil;
 import org.bstats.charts.SimplePie;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 
@@ -114,10 +116,11 @@ public final class Metrics {
 
             // mythicmobs
             metrics.add("usingMythicMobs", () -> coins.getServer().getPluginManager().isPluginEnabled("MythicMobs"));
-            var mm = coins.getServer().getPluginManager().getPlugin("MythicMobs");
-            if (mm != null) {
-                metrics.add("mythicMobsVersion", () -> mm.getDescription().getVersion().split("-")[0]);
-            }
+            Optional.ofNullable(coins.getServer().getPluginManager().getPlugin("MythicMobs"))
+                .ifPresent(mm -> metrics.add("mythicMobsVersion", () -> mm.getDescription().getVersion().split("-")[0]));
+
+            // levelled mobs
+            metrics.add("usingLevelledMobs", () -> coins.getServer().getPluginManager().isPluginEnabled("LevelledMobs"));
         });
     }
 }
