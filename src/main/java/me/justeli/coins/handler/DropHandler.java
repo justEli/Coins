@@ -11,11 +11,13 @@ import me.justeli.coins.util.Permissions;
 import me.justeli.coins.util.Util;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.block.Block;
+import org.bukkit.block.data.Ageable;
+import org.bukkit.block.data.type.MangrovePropagule;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -247,7 +249,7 @@ public final class DropHandler implements Listener {
             return;
         }
 
-        if (event.getPlayer().getGameMode() != GameMode.SURVIVAL || isBlockDropSameItem(event)) {
+        if (event.getPlayer().getGameMode() != GameMode.SURVIVAL || isNoDrop(event)) {
             return;
         }
 
@@ -263,15 +265,40 @@ public final class DropHandler implements Listener {
         dropCoins(multiplier, event.getPlayer(), event.getBlock().getLocation().add(.5, .5, .5), true);
     }
 
-    // if the block that is mined is exactly the same as the items it drops
-    private boolean isBlockDropSameItem(BlockBreakEvent event) {
-        Material type = event.getBlock().getType();
-        for (ItemStack item : event.getBlock().getDrops(event.getPlayer().getInventory().getItemInMainHand())) {
+    /// @return true if the block that is mined is exactly the same as the items it drops.
+    /// except for crops; this will be false if the crop is a full-grown crop
+    private static boolean isNoDrop(BlockBreakEvent event) {
+        var block = event.getBlock();
+        var crop = getCrop(block);
+
+        // if the block is a crop, check if it is full-grown
+        if (crop.isPresent()) {
+            return isNotFullGrownCrop(crop.get());
+        }
+
+        // otherwise, check if the broken block is the same type as the item it drops
+        var type = block.getType();
+        for (ItemStack item : block.getDrops(event.getPlayer().getInventory().getItemInMainHand())) {
             if (item.getType() == type) {
                 return true;
             }
         }
         return false;
+    }
+
+    private static Optional<Ageable> getCrop(Block block) {
+        if (!(block.getState().getBlockData() instanceof Ageable ageable)) {
+            return Optional.empty();
+        }
+        if (block.getState().getBlockData() instanceof MangrovePropagule) {
+            return Optional.empty();
+        }
+        return Optional.of(ageable);
+    }
+
+    private static boolean isNotFullGrownCrop(Ageable ageable) {
+        int maxAge = ageable.getMaximumAge();
+        return maxAge != ageable.getAge() || maxAge < 3;
     }
 
     private void dropCoins(int amount, @Nullable Player player, @NotNull Location location, boolean block) {
