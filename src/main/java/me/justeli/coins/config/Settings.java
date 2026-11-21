@@ -117,48 +117,69 @@ public final class Settings {
 
             ConfigEntry configEntry = field.getAnnotation(ConfigEntry.class);
             field.setAccessible(true);
-            String configKey = configEntry.value();
+
+            String validKey = configEntry.value();
 
             try {
-                if (!config.contains(configKey)) {
-                    String validKey = configKey;
-                    configKey = LEGACY_CONVERTER.convert(validKey); // convert to old style
-                    if (configKey != null && config.contains(configKey)) {
+                String usedConfigKey;
+                if (config.contains(validKey)) {
+                    usedConfigKey = validKey;
+                }
+                else {
+                    usedConfigKey = LEGACY_CONVERTER.convert(validKey); // convert to old style
+
+                    if (usedConfigKey != null && config.contains(usedConfigKey)) {
                         // deprecated in Coins v1.14 (April 2026)
                         showWarning("""
-                            You are using the old format of config keys ('%s' instead of '%s'). Please update \
+                            You are using the old format of config keys (`%s` instead of `%s`). Please update \
                             your config, as support for this will be dropped in the future."""
-                            .formatted(configKey, validKey)
+                            .formatted(usedConfigKey, validKey)
                         );
                         USING_LEGACY_KEYS = true;
                     }
                 }
 
-                if (configKey == null || !config.contains(configKey)) {
+                if (usedConfigKey == null || !config.contains(usedConfigKey)) {
                     if (configEntry.required()) {
-                        String suffix = field.getType() == String.class? "'" : "";
-                        String value = field.get(Config.class).toString();
-                        String defaultValue = suffix + value + suffix;
+                        Class<?> configClass = field.getType();
+                        Object rawDefaultValue = field.get(Config.class);
+
+                        String defaultValue;
+                        if (configClass == String.class || configClass == SoundKey.class) {
+                            defaultValue = "'%s'".formatted(rawDefaultValue.toString());
+                        }
+                        else if (configClass == Material.class) {
+                            defaultValue = "'%s'".formatted(((Material) rawDefaultValue).getKey().toString());
+                        }
+                        else if (configClass.isEnum()) {
+                            defaultValue = "'%s'".formatted(rawDefaultValue.toString().toLowerCase());
+                        }
+                        else if (configClass == Component.class) {
+                            defaultValue = "'%s'".formatted(ComponentUtil.toMiniMessage((Component) rawDefaultValue));
+                        }
+                        else {
+                            defaultValue = rawDefaultValue.toString();
+                        }
+
                         showWarning("""
-                            Config is missing `%s`. Using its default value '%s' now.%s Consider adding this to the config:
+                            Config is missing the option `%s`.%s Consider to add this to config.yml:
                             ----------------------------------------
                             %s: %s
                             ----------------------------------------"""
                             .formatted(
-                                configKey,
-                                value,
+                                validKey,
                                 configEntry.motivation().isEmpty()? "" : " %s".formatted(configEntry.motivation()),
-                                configEntry.value().replace(".", ":\n  "),
+                                validKey.replace(".", ":\n  "),
                                 defaultValue
                             )
                         );
 
                         // deprecated in Coins v1.16 (April 2026)
-                        if ("locale".equals(configEntry.value())) {
+                        if ("locale".equals(validKey)) {
                             MIGRATED_TO_LOCALE = false;
                         }
                     }
-                    else if ("language".equals(configKey)) {
+                    else if ("language".equals(usedConfigKey)) {
                         // config has no 'language' key in config, so reset it to ""
                         Config.LANGUAGE = ""; // deprecated in Coins v1.16 (April 2026)
                     }
@@ -169,11 +190,11 @@ public final class Settings {
                 Object configValue;
 
                 if (configClass == Set.class) {
-                    List<String> stringList = config.getStringList(configKey);
+                    List<String> stringList = config.getStringList(usedConfigKey);
                     configValue = new HashSet<>(stringList);
                 }
                 else if (configClass == Map.class) {
-                    var section = config.getConfigurationSection(configKey);
+                    var section = config.getConfigurationSection(usedConfigKey);
                     if (section == null) {
                         continue;
                     }
@@ -189,7 +210,7 @@ public final class Settings {
                     configValue = configMap;
                 }
                 else if (configClass == Component.class) {
-                    String value = config.getString(configKey);
+                    String value = config.getString(usedConfigKey);
                     if (value == null) {
                         throw new NullPointerException();
                     }
@@ -201,7 +222,7 @@ public final class Settings {
                         showWarning("""
                             Found outdated placeholders for '%s' in the config at `%s`. Change {$} or %%amount%% \
                             to {currency} or {amount}. Support will be removed in a future release."""
-                            .formatted(value, configKey)
+                            .formatted(value, usedConfigKey)
                         );
                     }
 
@@ -213,7 +234,7 @@ public final class Settings {
                             Found outdated color codes for '%s' in the config at `%s`. Change this to minimessage \
                             formatting '%s'. Support for old color codes will be removed in a future release. More info: \
                             https://github.com/justEli/Coins/wiki/Formatting-messages-and-components"""
-                            .formatted(value, configKey, message)
+                            .formatted(value, usedConfigKey, message)
                         );
                         configValue = ComponentUtil.parse(message);
                     }
@@ -222,18 +243,18 @@ public final class Settings {
                     }
                 }
                 else if (configClass == String.class || configClass == Material.class || configClass == SoundKey.class || configClass == MessagePosition.class) {
-                    String value = config.getString(configKey);
+                    String value = config.getString(usedConfigKey);
                     if (value == null) {
                         throw new NullPointerException();
                     }
                     else if (configClass == Material.class) {
-                        configValue = getMaterial(value, configEntry.value()).orElse(Material.SUNFLOWER);
+                        configValue = getMaterial(value, validKey).orElse(Material.SUNFLOWER);
                     }
                     else if (configClass == SoundKey.class) {
-                        configValue = getSound(value, configEntry.value()).orElse(new SoundKey("minecraft:item.armor.equip_gold"));
+                        configValue = getSound(value, validKey).orElse(new SoundKey("minecraft:item.armor.equip_gold"));
                     }
                     else if (configClass == MessagePosition.class) {
-                        Optional<MessagePosition> position = getMessagePosition(value, configEntry.value());
+                        Optional<MessagePosition> position = getMessagePosition(value, validKey);
                         if (position.isPresent()) {
                             configValue = position.get();
                         }
@@ -246,7 +267,7 @@ public final class Settings {
                     }
                 }
                 else if (configClass == Long.class || configClass == Integer.class || configClass == Float.class || configClass == Double.class) {
-                    double value = Double.parseDouble(config.get(configKey, "0").toString());
+                    double value = Double.parseDouble(config.get(usedConfigKey, "0").toString());
 
                     if (configClass == Long.class) {
                         configValue = (long) value;
@@ -262,7 +283,7 @@ public final class Settings {
                     }
                 }
                 else {
-                    configValue = configClass.cast(config.get(configKey));
+                    configValue = configClass.cast(config.get(usedConfigKey));
                 }
 
                 field.set(Config.class, configValue);
@@ -270,9 +291,8 @@ public final class Settings {
             catch (Exception exception) {
                 try {
                     Object defaultValue = field.get(Config.class);
-                    showWarning("""
-                        Config file has wrong value at `%s`. Using its default value '%s' now."""
-                        .formatted(configEntry.value(), defaultValue)
+                    showWarning("Config file has wrong value at `%s`. Using its default value '%s' now."
+                        .formatted(validKey, defaultValue)
                     );
                 }
                 catch (IllegalAccessException ignored) {}

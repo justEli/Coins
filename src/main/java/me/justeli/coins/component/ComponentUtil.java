@@ -82,4 +82,8 @@ public final class ComponentUtil {
     public static String parseLegacyToMiniMessage(@NotNull String message) {
         return convertHexCodes(convertSpigotHexCodes(convertNormalCodes(message)));
     }
+
+    public static String toMiniMessage(Component component) {
+        return MINI_MESSAGE.serialize(component);
+    }
 }
